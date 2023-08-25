@@ -7,9 +7,12 @@ pub struct Point {
 }
 
 impl Point {
-    pub fn to_cell(&self, range: f64, level: u64) -> Cell {
+    pub fn new(x: f64, y: f64, z: f64) -> Point {
+        Point { x, y, z }
+    }
+    pub fn to_cell(&self, range: f64, level: i64) -> Cell {
         let size = range / ((1 << level) as f64);
-        let [x, y, z] = [self.x, self.y, self.z].map(|x| ((x + range / 2.) / size) as u64);
+        let [x, y, z] = [self.x, self.y, self.z].map(|x| ((x + range / 2.) / size).floor() as i64);
         Cell { x, y, z, level }
     }
 
@@ -22,19 +25,20 @@ impl Point {
     }
 }
 
+#[derive(Debug)]
 pub struct Cell {
-    x: u64,
-    y: u64,
-    z: u64,
-    level: u64,
+    x: i64,
+    y: i64,
+    z: i64,
+    level: i64,
 }
 
 impl Cell {
-    pub fn new(x: u64, y: u64, z: u64, level: u64) -> Self {
+    pub fn new(x: i64, y: i64, z: i64, level: i64) -> Self {
         Cell { x, y, z, level }
     }
 
-    fn to_array(&self) -> [u64; 3] {
+    pub fn to_array(&self) -> [i64; 3] {
         [self.x, self.y, self.z]
     }
 
@@ -54,19 +58,19 @@ impl Cell {
         Point { x, y, z }
     }
 
-    pub fn hash(&self) -> u64 {
+    pub fn hash(&self) -> i64 {
         (1 << (3 * self.level))
-            * self
+            + self
                 .to_array()
                 .iter()
                 .enumerate()
-                .map(|(i, x)| *x * 1 << ((i + 1) as u64 * self.level))
-                .sum::<u64>()
+                .map(|(i, x)| *x * 1 << (i as i64 * self.level))
+                .sum::<i64>()
     }
 
-    pub fn in_bounds(&self, level: u64) -> bool {
+    pub fn in_bounds(&self) -> bool {
         self.to_array()
-            .map(|x| (1..=(1 << level)).contains(&x))
+            .map(|x| (0..(1 << self.level)).contains(&x))
             .iter()
             .all(|x| *x)
     }
@@ -119,5 +123,16 @@ impl Cell {
                 level,
             },
         ]
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Cell;
+
+    #[test]
+    fn should_be_in_bounds() {
+        let c = Cell::new(0, 1, 1, 1);
+        println!("{:?}", c.in_bounds());
     }
 }
