@@ -1,7 +1,9 @@
+use std::ops;
+
 pub struct Point {
-    x: f64,
-    y: f64,
-    z: f64,
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
 }
 
 impl Point {
@@ -9,6 +11,14 @@ impl Point {
         let size = range / ((1 << level) as f64);
         let [x, y, z] = [self.x, self.y, self.z].map(|x| ((x + range / 2.) / size) as u64);
         Cell { x, y, z, level }
+    }
+
+    pub fn diff(&self, p: Point) -> Point {
+        Point {
+            x: self.x - p.x,
+            y: self.y - p.y,
+            z: self.z - p.z,
+        }
     }
 }
 
@@ -26,6 +36,22 @@ impl Cell {
 
     fn to_array(&self) -> [u64; 3] {
         [self.x, self.y, self.z]
+    }
+
+    pub fn equals(&self, c: &Cell) -> bool {
+        [self.x, self.y, self.z, self.level]
+            .iter()
+            .zip([c.x, c.y, c.z, c.level])
+            .map(|(a, b)| *a == b)
+            .all(|b| b)
+    }
+
+    pub fn center(&self, range: f64) -> Point {
+        let size = range / ((1 << self.level) as f64);
+        let [x, y, z] = self
+            .to_array()
+            .map(|x| size * (x as f64 + 0.5) - range / 2.);
+        Point { x, y, z }
     }
 
     pub fn hash(&self) -> u64 {
