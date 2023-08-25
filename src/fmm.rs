@@ -20,6 +20,10 @@ pub struct Cell {
 }
 
 impl Cell {
+    pub fn new(x: u64, y: u64, z: u64, level: u64) -> Self {
+        Cell { x, y, z, level }
+    }
+
     fn to_array(&self) -> [u64; 3] {
         [self.x, self.y, self.z]
     }
@@ -39,5 +43,55 @@ impl Cell {
             .map(|x| (1..=(1 << level)).contains(&x))
             .iter()
             .all(|x| *x)
+    }
+
+    pub fn children(&self) -> [Cell; 8] {
+        let level = self.level + 1;
+        let [x, y, z] = self.to_array().map(|x| x * 2);
+        [
+            Cell { x, y, z, level },
+            Cell {
+                x: x + 1,
+                y,
+                z,
+                level,
+            },
+            Cell {
+                x,
+                y: y + 1,
+                z,
+                level,
+            },
+            Cell {
+                x,
+                y,
+                z: z + 1,
+                level,
+            },
+            Cell {
+                x: x + 1,
+                y: y + 1,
+                z,
+                level,
+            },
+            Cell {
+                x: x + 1,
+                y,
+                z: z + 1,
+                level,
+            },
+            Cell {
+                x,
+                y: y + 1,
+                z: z + 1,
+                level,
+            },
+            Cell {
+                x: x + 1,
+                y: y + 1,
+                z: z + 1,
+                level,
+            },
+        ]
     }
 }

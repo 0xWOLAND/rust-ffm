@@ -5,6 +5,7 @@ pub struct Grid {
     y: Vec<u64>,
     z: Vec<u64>,
 
+    range: f64,
     max_depth: usize,
     max_hash_val: u64,
 }
@@ -23,6 +24,7 @@ impl Grid {
             x,
             y,
             z,
+            range,
             max_depth,
             max_hash_val: max_hash_val as u64,
         }
@@ -30,6 +32,17 @@ impl Grid {
 
     fn neighbors(p: Point) -> Vec<Cell> {
         todo!()
+    }
+
+    fn get_nested_cells(&self, p: Point) -> Vec<Cell> {
+        let mut nested_cells = Vec::<Cell>::new();
+        for level in (1..=self.max_depth).map(|x| x as u64) {
+            let cell = p.to_cell(self.range, level);
+            if cell.in_bounds(level) {
+                nested_cells.push(cell);
+            }
+        }
+        nested_cells
     }
 
     pub fn insert(p: Point, v: f64) {}
