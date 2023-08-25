@@ -10,7 +10,6 @@ pub struct Grid {
 
     range: f64,
     max_depth: usize,
-    max_hash_val: u64,
 }
 
 impl Grid {
@@ -29,7 +28,6 @@ impl Grid {
             z,
             range,
             max_depth,
-            max_hash_val: max_hash_val as u64,
         }
     }
 
