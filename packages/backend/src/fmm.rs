@@ -12,7 +12,7 @@ pub struct Velocity {
     pub v_z: f64,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Point {
     pub p_x: f64,
     pub p_y: f64,

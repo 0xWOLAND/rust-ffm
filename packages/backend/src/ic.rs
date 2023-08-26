@@ -68,7 +68,7 @@ mod tests {
     #[test]
     fn test_plummer() {
         for _ in 0..10 {
-            println!("{:?}", plummer(10, None, None));
+            println!("{:?}", plummer(20, Some(10.), Some(10.)));
         }
     }
 }

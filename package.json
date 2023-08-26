@@ -1,0 +1,15 @@
+{
+  "name": "rust-ffm",
+  "version": "1.0.0",
+  "description": "Cosmological simulation using the Fast Multipole Method",
+  "main": "index.js",
+  "repository": "https://github.com/0xWOLAND/rust-ffm.git",
+  "author": "bhargav <bhargav.annem@gmail.com>",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build:wasm": "cd packages/backend && wasm-pack build && mv pkg ../frontend"
+  }
+}
