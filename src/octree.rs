@@ -76,7 +76,7 @@ impl Grid {
             let hash = cell.hash() as usize;
             let center = cell.center(self.range);
             let mut d = p.diff(center);
-            let r = [d.x, d.y, d.z]
+            let r = [d.p_x, d.p_y, d.p_z]
                 .map(|x| x.powi(2))
                 .iter()
                 .sum::<f64>()
@@ -84,13 +84,13 @@ impl Grid {
 
             let a = G_CONSTANT * mass / r.powi(2);
 
-            d.x /= r;
-            d.y /= r;
-            d.z /= r;
+            d.p_x /= r;
+            d.p_y /= r;
+            d.p_z /= r;
 
-            let a_x = a * d.x;
-            let a_y = a * d.y;
-            let a_z = a * d.z;
+            let a_x = a * d.p_x;
+            let a_y = a * d.p_y;
+            let a_z = a * d.p_z;
 
             self.x[hash] += a_x;
             self.y[hash] += a_y;
@@ -113,24 +113,5 @@ impl Grid {
         }
 
         (x, y, z)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::{config::AU, fmm::Point};
-
-    use super::Grid;
-
-    #[test]
-    fn check_nested_cells() {
-        let g = Grid::new(AU / 100., AU);
-        let p = Point::new(0., 0., 0.);
-
-        println!("{:?}", g.get_nested_cells(&p));
-
-        let p = Point::new(10., 10., 10.);
-
-        println!("{:?}", g.get_nested_cells(&p));
     }
 }

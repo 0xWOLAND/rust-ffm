@@ -1,26 +1,34 @@
-use std::ops;
+pub struct Particle {
+    pub p: Point,
+    pub v: Velocity,
+    pub mass: f64,
+}
+
+pub struct Velocity {
+    pub v_x: f64,
+    pub v_y: f64,
+    pub v_z: f64,
+}
 
 pub struct Point {
-    pub x: f64,
-    pub y: f64,
-    pub z: f64,
+    pub p_x: f64,
+    pub p_y: f64,
+    pub p_z: f64,
 }
 
 impl Point {
-    pub fn new(x: f64, y: f64, z: f64) -> Point {
-        Point { x, y, z }
-    }
     pub fn to_cell(&self, range: f64, level: i64) -> Cell {
         let size = range / ((1 << level) as f64);
-        let [x, y, z] = [self.x, self.y, self.z].map(|x| ((x + range / 2.) / size).floor() as i64);
+        let [x, y, z] =
+            [self.p_x, self.p_y, self.p_z].map(|x| ((x + range / 2.) / size).floor() as i64);
         Cell { x, y, z, level }
     }
 
     pub fn diff(&self, p: Point) -> Point {
         Point {
-            x: self.x - p.x,
-            y: self.y - p.y,
-            z: self.z - p.z,
+            p_x: self.p_x - p.p_x,
+            p_y: self.p_y - p.p_y,
+            p_z: self.p_z - p.p_z,
         }
     }
 }
@@ -55,7 +63,11 @@ impl Cell {
         let [x, y, z] = self
             .to_array()
             .map(|x| size * (x as f64 + 0.5) - range / 2.);
-        Point { x, y, z }
+        Point {
+            p_x: x,
+            p_y: y,
+            p_z: z,
+        }
     }
 
     pub fn hash(&self) -> i64 {
