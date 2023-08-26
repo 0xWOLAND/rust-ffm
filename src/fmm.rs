@@ -1,21 +1,29 @@
+#[derive(Debug)]
 pub struct Particle {
     pub p: Point,
     pub v: Velocity,
     pub mass: f64,
 }
 
+#[derive(Debug)]
 pub struct Velocity {
     pub v_x: f64,
     pub v_y: f64,
     pub v_z: f64,
 }
 
+#[derive(Debug)]
 pub struct Point {
     pub p_x: f64,
     pub p_y: f64,
     pub p_z: f64,
 }
 
+impl Point {
+    pub fn new(p_x: f64, p_y: f64, p_z: f64) -> Point {
+        Point { p_x, p_y, p_z }
+    }
+}
 impl Point {
     pub fn to_cell(&self, range: f64, level: i64) -> Cell {
         let size = range / ((1 << level) as f64);

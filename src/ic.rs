@@ -20,12 +20,13 @@ fn to_spherical(r: f64) -> (f64, f64, f64) {
     (x, y, z)
 }
 
-pub fn plummer(n: usize) -> Vec<Particle> {
+pub fn plummer(n: usize, a: Option<f64>, M: Option<f64>) -> Vec<Particle> {
     let mut particles = Vec::<Particle>::new();
 
     for _ in 0..n {
-        let mass = 1.0 / (n as f64);
-        let radius = (random().powf(-2. / 3.) - 1.).sqrt().recip();
+        let mass = M.unwrap_or_else(|| 1.0) / (n as f64);
+        let radius =
+            a.unwrap_or_else(|| 1.) / ((M.unwrap_or_else(|| 1.0) / mass).powf(2. / 3.) - 1.).sqrt();
         let (p_x, p_y, p_z) = to_spherical(radius);
 
         let mut x: f64 = 0.0;
@@ -49,6 +50,8 @@ pub fn plummer(n: usize) -> Vec<Particle> {
 
 #[cfg(test)]
 mod tests {
+    use crate::ic::plummer;
+
     use super::random;
 
     #[test]
@@ -59,6 +62,13 @@ mod tests {
 
             assert!(a != b);
             println!("{} {}", a, b);
+        }
+    }
+
+    #[test]
+    fn test_plummer() {
+        for _ in 0..10 {
+            println!("{:?}", plummer(10, None, None));
         }
     }
 }
