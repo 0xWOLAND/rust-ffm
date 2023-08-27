@@ -1,16 +1,20 @@
+extern crate console_error_panic_hook;
+use std::panic;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{config::AU, fmm::Point, ic::plummer, octree::Grid, utils::to_texture};
 
 #[wasm_bindgen]
-pub fn simulate(n: usize, a: f64, M: f64) -> js_sys::Uint8Array {
+pub fn simulate(n: usize, a: f64, M: f64, width: usize, height: usize) -> js_sys::Uint8Array {
+    panic::set_hook(Box::new(console_error_panic_hook::hook));
+
     let ic = plummer(n, Some(a), Some(M));
 
     let mut g = Grid::new(AU / 10., AU);
     for particle in &ic {
         g.insert_particle(&particle.p, particle.mass);
     }
-    to_texture(ic)
+    to_texture(ic, width, height)
 }
 
 #[wasm_bindgen]
@@ -21,7 +25,7 @@ pub fn hello_world() -> String {
 #[cfg(test)]
 mod tests {
 
-    use crate::{config::AU, fmm::Point, octree::Grid};
+    use crate::{config::AU, fmm::Point, octree::Grid, simulation::simulate};
 
     #[test]
     fn test_two_particle() {
@@ -39,5 +43,10 @@ mod tests {
 
         println!("a_1: {:?}", a_1);
         println!("a_2: {:?}", a_2);
+    }
+
+    #[test]
+    fn test_simulate() {
+        println!("{:?}", simulate(10, 5., 5., 10000, 10000));
     }
 }

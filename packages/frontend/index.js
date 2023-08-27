@@ -1,3 +1,3 @@
-import {hello_world} from './pkg'
+import {simulate} from './pkg'
 
-console.log(hello_world());
+console.log(simulate(10., 5., 5.));

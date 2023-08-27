@@ -3,12 +3,12 @@ use crate::{
     fmm::Particle,
 };
 
-pub fn to_texture(a: Vec<Particle>) -> js_sys::Uint8Array {
-    let mut image: [u8; IMAGE_DIM] = [0; IMAGE_DIM];
+pub fn to_texture(a: Vec<Particle>, width: usize, height: usize) -> js_sys::Uint8Array {
+    let mut image: Vec<u8> = vec![0; width * height];
 
     a.iter().for_each(|particle| {
         let p = &particle.p;
-        let pixel = 3 * (p.p_x + p.p_y * AU + p.p_z * AU * AU) as usize;
+        let pixel = 3 * ((p.p_x * (width as f64 / AU) + (p.p_y * (height as f64 / AU))) as usize);
         image[pixel..pixel + 3].fill(255);
     });
 
