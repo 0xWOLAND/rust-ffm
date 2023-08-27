@@ -1,5 +1,0 @@
-{
-    "rust-analyzer.linkedProjects": [
-        "./packages/backend/Cargo.toml"
-    ]
-}
