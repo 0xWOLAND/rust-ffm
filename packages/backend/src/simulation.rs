@@ -18,8 +18,8 @@ pub fn simulate(n: usize, a: f64, M: f64, width: usize, height: usize) -> js_sys
 }
 
 #[wasm_bindgen]
-pub fn hello_world() -> String {
-    "hello from rust!".to_string()
+pub fn get_scale_length() -> f64 {
+    AU
 }
 
 #[cfg(test)]

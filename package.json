@@ -10,6 +10,6 @@
     "packages/*"
   ],
   "scripts": {
-    "build:wasm": "cd packages/backend && wasm-pack build && mv pkg ../frontend"
+    "build:wasm": "cd packages/backend && wasm-pack build --target web --out-dir ../frontend/src/lib/wasm"
   }
 }
