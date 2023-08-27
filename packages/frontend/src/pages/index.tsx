@@ -1,9 +1,9 @@
-import { HelloWorld } from "@/components/Circuits";
+import { RustFFM } from "@/components/Simulation";
 
 export default function Home() {
   return (
-    <main className="flex bg-gray-900 min-h-screen flex-col items-center justify-between p-24">
-      <HelloWorld />
+    <main className="bg-gray-900 min-h-screen ">
+      <RustFFM />
     </main>
   );
 }
