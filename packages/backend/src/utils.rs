@@ -3,7 +3,7 @@ use crate::{
     fmm::Particle,
 };
 
-pub fn to_texture(a: Vec<Particle>, width: usize, height: usize) -> js_sys::Uint8Array {
+pub fn to_texture(a: &Vec<Particle>, width: usize, height: usize) -> js_sys::Uint8Array {
     let mut image: Vec<u8> = vec![0; width * height];
 
     a.iter().for_each(|particle| {

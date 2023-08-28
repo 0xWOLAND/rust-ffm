@@ -66,15 +66,6 @@ impl Grid {
     pub fn insert_particle(&mut self, p: &Point, mass: f64) {
         let neighbors = self.neighbors(&p);
         for cell in neighbors {
-            // if cell
-            //     .to_array()
-            //     .map(|x| (x & (x - 1)) == 0 && x > 0)
-            //     .iter()
-            //     .all(|x| *x)
-            // {
-            //     println!("found");
-            // }
-
             let hash = cell.hash() as usize;
             let center = cell.center(self.range);
             let mut d = p.diff(center);

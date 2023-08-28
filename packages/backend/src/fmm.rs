@@ -1,3 +1,5 @@
+use std::ops;
+
 #[derive(Debug)]
 pub struct Particle {
     pub p: Point,
@@ -12,11 +14,26 @@ pub struct Velocity {
     pub v_z: f64,
 }
 
+impl ops::AddAssign<(f64, f64, f64)> for Velocity {
+    fn add_assign(&mut self, rhs: (f64, f64, f64)) {
+        self.v_x += rhs.0;
+        self.v_y += rhs.1;
+        self.v_z += rhs.2;
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Point {
     pub p_x: f64,
     pub p_y: f64,
     pub p_z: f64,
+}
+impl ops::AddAssign<(f64, f64, f64)> for Point {
+    fn add_assign(&mut self, rhs: (f64, f64, f64)) {
+        self.p_x += rhs.0;
+        self.p_y += rhs.1;
+        self.p_z += rhs.2;
+    }
 }
 
 impl Point {
