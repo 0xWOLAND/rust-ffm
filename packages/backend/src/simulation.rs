@@ -1,14 +1,9 @@
 extern crate console_error_panic_hook;
+use std::iter::once;
 use std::panic;
 use wasm_bindgen::prelude::wasm_bindgen;
 
-use crate::{
-    config::AU,
-    fmm::{Particle, Point},
-    ic::plummer,
-    octree::Grid,
-    utils::to_texture,
-};
+use crate::{config::AU, fmm::Particle, ic::plummer, octree::Grid, utils::flatten};
 
 #[wasm_bindgen]
 pub struct CosmoSim {
@@ -44,16 +39,47 @@ impl CosmoSim {
             g,
         }
     }
-
     #[wasm_bindgen]
-    pub fn simulate(&mut self, dt: f64) -> js_sys::Uint8Array {
+    pub fn simulate(&mut self, dt: f64) {
+        self.g = Grid::new(AU / 10., AU);
+        for particle in &self.particles {
+            self.g.insert_particle(&particle.p, particle.mass);
+        }
+
         let mul_tuple = |tup: (f64, f64, f64), x: f64| (tup.0 * x, tup.1 * x, tup.2 * x);
         self.particles.iter_mut().for_each(|p| {
             let a = self.g.get_acceleration(&p.p);
             p.v += mul_tuple(a, dt);
             p.p += mul_tuple((p.v.v_x, p.v.v_y, p.v.v_z), dt);
         });
-        to_texture(&self.particles, self.width, self.height)
+    }
+
+    #[wasm_bindgen]
+    pub fn get_position(&self) -> js_sys::Float32Array {
+        let x: Vec<f32> = flatten(
+            self.particles
+                .iter()
+                .map(|p| (p.p.p_x, p.p.p_y, p.p.p_z))
+                .collect::<Vec<(f64, f64, f64)>>(),
+        )
+        .iter()
+        .map(|x| *x as f32)
+        .collect();
+        js_sys::Float32Array::from(&x[..])
+    }
+
+    #[wasm_bindgen]
+    pub fn get_velocity(&self) -> js_sys::Float32Array {
+        let v: Vec<f32> = flatten(
+            self.particles
+                .iter()
+                .map(|p| (p.v.v_x, p.v.v_y, p.v.v_z))
+                .collect::<Vec<(f64, f64, f64)>>(),
+        )
+        .iter()
+        .map(|x| *x as f32)
+        .collect();
+        js_sys::Float32Array::from(&v[..])
     }
 }
 #[wasm_bindgen]

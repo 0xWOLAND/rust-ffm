@@ -1,23 +1,26 @@
-export const vertexShaderSrc = `#version 300 es
+export const vertexShaderSrc = `
+  varying vec3 vPosition;
+		attribute float mass;
+	    const float earth_mass = 1e24; //kg
 
-    precision highp float;
 
-    in vec4 a_position;
-
-    void main() {
-      gl_Position = a_position;
-    }
+		void main() {
+			vPosition = position;
+			gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.);
+			// gl_PointSize = 8. * mass / earth_mass;
+      gl_PointSize = 5.;
+		}
   `;
 
-export const fragmentShaderSrc = `#version 300 es
+export const fragmentShaderSrc = `
+        const float PI = 3.1415926;
 
-    precision highp float;
+        varying vec3 vPosition;
 
-    uniform vec2 iResolution;
+        //USER_INPUT_GOES_HERE
 
-    out vec4 color; 
-    
-    void main() {
-      color = vec4(gl_FragCoord.x / iResolution.x, gl_FragCoord.y / iResolution.y, 0, 1);
-    }
+        void main() {
+            gl_FragColor = vec4(1,1,1,1);
+        }
+
   `;
