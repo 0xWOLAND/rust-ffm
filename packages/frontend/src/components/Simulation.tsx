@@ -52,11 +52,17 @@ export const RustFFM = () => {
       0.01 * astronomical_unit,
       10000 * astronomical_unit
     );
-    camera.position.set(0, 50, astronomical_unit);
+    camera.position.set(0, 0.2 * astronomical_unit, astronomical_unit);
     camera.position.z = 2;
 
-    const N = 1000;
-    const ffm = new wasm.CosmoSim(N, 100, 1e3, canvas.width, canvas.height);
+    const N = 10000;
+    const ffm = new wasm.CosmoSim(
+      N,
+      astronomical_unit,
+      1e15,
+      canvas.width,
+      canvas.height
+    );
 
     const scene = new THREE.Scene();
 
@@ -73,8 +79,11 @@ export const RustFFM = () => {
       "position",
       new THREE.BufferAttribute(positions, 3)
     );
+    particleGeometry.setAttribute(
+      "velocity",
+      new THREE.BufferAttribute(velocities, 3)
+    );
     particleGeometry.setAttribute("mass", new THREE.BufferAttribute(mass, 1));
-    console.log(positions);
 
     const particleShader = new THREE.ShaderMaterial({
       vertexShader: vertexShaderSrc,
@@ -96,18 +105,13 @@ export const RustFFM = () => {
     // scene.add(cube);
 
     function render(time: number) {
-      time *= 0.000001; // convert time to seconds
-
-      cube.rotation.x = time;
-      cube.rotation.y = time;
-
       renderer.render(scene, camera);
-      ffm.simulate(time);
+      ffm.simulate(time * 1e-5);
       positions = ffm.get_position();
       velocities = ffm.get_velocity();
-      console.log(ffm.get_position(), ffm.get_velocity());
       // TODO do gpu based update
       particleGeometry.attributes.position.array = positions;
+      particleGeometry.attributes.velocity.array = velocities;
       particleGeometry.attributes.position.needsUpdate = true;
 
       requestAnimationFrame(render);

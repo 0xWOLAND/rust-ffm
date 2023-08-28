@@ -1,7 +1,4 @@
-use crate::{
-    config::{AU, IMAGE_DIM},
-    fmm::Particle,
-};
+use crate::{config::AU, fmm::Particle};
 
 pub fn to_texture(a: &Vec<Particle>, width: usize, height: usize) -> js_sys::Uint8Array {
     let mut image: Vec<u8> = vec![0; width * height];
