@@ -70,6 +70,10 @@ export const RustFFM = () => {
 
     gl.useProgram(program);
 
+    // UNIFORMS
+    const iResolutionLoc = gl.getUniformLocation(program, "iResolution");
+    gl.uniform2f(iResolutionLoc, canvas.width, canvas.height);
+
     // position buffer
     const positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);

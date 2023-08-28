@@ -7,7 +7,11 @@ export const vertexShaderSrc = `
   `;
 
 export const fragmentShaderSrc = `
+    precision highp float;
+
+    uniform vec2 iResolution;
+
     void main() {
-      gl_FragColor = vec4(gl_FragCoord.x / 255., 0, 0, 1);
+      gl_FragColor = vec4(gl_FragCoord.x / iResolution.x, gl_FragCoord.y / iResolution.y, 0, 1);
     }
   `;
