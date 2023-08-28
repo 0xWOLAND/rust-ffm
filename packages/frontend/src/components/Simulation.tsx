@@ -40,7 +40,7 @@ export const RustFFM = () => {
       throw new Error("No html canvas element.");
     }
 
-    const gl = canvas.getContext("webgl");
+    const gl = canvas.getContext("webgl2");
 
     if (!gl) {
       throw new Error("Unable to initialize WebGL.");
