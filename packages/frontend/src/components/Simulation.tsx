@@ -2,6 +2,8 @@ import { useContext, useState, useEffect, useRef } from "react";
 import { WASMContext } from "../context/wasm";
 import { fragmentShaderSrc, vertexShaderSrc } from "@/webgl/shaders";
 import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import React from "react";
 
 const initShader = (
   gl: any,
@@ -50,11 +52,11 @@ export const RustFFM = () => {
       0.01 * astronomical_unit,
       10000 * astronomical_unit
     );
-    camera.position.set(0, 0, (1 / 2) * astronomical_unit);
+    camera.position.set(0, 50, astronomical_unit);
     camera.position.z = 2;
 
     const N = 1000;
-    const ffm = new wasm.CosmoSim(N, 1e3, 1e3, canvas.width, canvas.height);
+    const ffm = new wasm.CosmoSim(N, 100, 1e3, canvas.width, canvas.height);
 
     const scene = new THREE.Scene();
 
@@ -80,6 +82,9 @@ export const RustFFM = () => {
       uniforms: {},
     });
 
+    scene.add(camera);
+    const cameraControls = new OrbitControls(camera, renderer.domElement);
+    cameraControls.noPan = false;
     var light = new THREE.AmbientLight(0xffffff);
     scene.add(light);
     const particleSystem = new THREE.Points(particleGeometry, particleShader);
@@ -91,7 +96,7 @@ export const RustFFM = () => {
     // scene.add(cube);
 
     function render(time: number) {
-      time *= 0.001; // convert time to seconds
+      time *= 0.000001; // convert time to seconds
 
       cube.rotation.x = time;
       cube.rotation.y = time;
@@ -101,6 +106,7 @@ export const RustFFM = () => {
       positions = ffm.get_position();
       velocities = ffm.get_velocity();
       console.log(ffm.get_position(), ffm.get_velocity());
+      // TODO do gpu based update
       particleGeometry.attributes.position.array = positions;
       particleGeometry.attributes.position.needsUpdate = true;
 
