@@ -59,7 +59,7 @@ export const RustFFM = () => {
     const ffm = new wasm.CosmoSim(
       N,
       astronomical_unit,
-      1e15,
+      1e18,
       canvas.width,
       canvas.height
     );
@@ -102,7 +102,7 @@ export const RustFFM = () => {
     const material = new THREE.MeshBasicMaterial({ color: 0x44aa88 }); // greenish blue
 
     const cube = new THREE.Mesh(geometry, material);
-    // scene.add(cube);
+    scene.add(cube);
 
     function render(time: number) {
       renderer.render(scene, camera);

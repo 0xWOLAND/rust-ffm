@@ -20,13 +20,42 @@ fn to_spherical(r: f64) -> (f64, f64, f64) {
     (x, y, z)
 }
 
+pub fn nagai(n: usize, a: Option<f64>, M: Option<f64>) -> Vec<Particle> {
+    let mut particles = Vec::<Particle>::new();
+
+    for _ in 0..n {
+        let mass = M.unwrap_or_else(|| 1.0) / (n as f64);
+        // sqrt(z^2+b^2) + a
+        let radius = (a.unwrap_or_else(|| 1.))
+            / ((M.unwrap_or_else(|| 1.0) / mass).powf(2. / 3.) - 1.).sqrt();
+        let (p_x, p_y, p_z) = to_spherical(radius);
+
+        let mut x: f64 = 0.0;
+        let mut y: f64 = 0.1;
+
+        while y > x * x * (1. - x * x).powf(3.5) {
+            x = random();
+            y = random() / 10.;
+        }
+        let velocity = x * (2.0_f64).sqrt() * (1. + radius * radius).powf(-0.25);
+        let (v_x, v_y, v_z) = to_spherical(velocity);
+
+        particles.push(Particle {
+            p: Point { p_x, p_y, p_z },
+            v: Velocity { v_x, v_y, v_z },
+            mass,
+        })
+    }
+    particles
+}
+
 pub fn plummer(n: usize, a: Option<f64>, M: Option<f64>) -> Vec<Particle> {
     let mut particles = Vec::<Particle>::new();
 
     for _ in 0..n {
         let mass = M.unwrap_or_else(|| 1.0) / (n as f64);
-        let radius =
-            a.unwrap_or_else(|| 1.) / ((M.unwrap_or_else(|| 1.0) / mass).powf(2. / 3.) - 1.).sqrt();
+        let radius = (a.unwrap_or_else(|| 1.))
+            / ((M.unwrap_or_else(|| 1.0) / mass).powf(2. / 3.) - 1.).sqrt();
         let (p_x, p_y, p_z) = to_spherical(radius);
 
         let mut x: f64 = 0.0;
