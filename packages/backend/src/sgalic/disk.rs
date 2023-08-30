@@ -5,11 +5,12 @@ use crate::{
 
 use super::{cmf::disk_radial_cmf, config::Config};
 
-pub fn set_disk_positions(N: usize, z0: f64, config: Config) -> Vec<(f64, f64, f64)> {
+pub fn set_disk_positions(N: usize, z0: f64, config: &mut Config) -> Vec<(f64, f64, f64)> {
     let Rd = config.Rd;
     let disk_cut = config.disk_cut;
 
     let disk_cut = disk_radial_cmf(&disk_cut, &Rd);
+    config.disk_cut = disk_cut;
     println!(
         "{:?}% of disk mass cut by the truncation...",
         (100. * (1. - disk_cut))
