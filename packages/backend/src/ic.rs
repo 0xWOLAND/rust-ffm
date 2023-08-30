@@ -1,15 +1,17 @@
-use std::f64::consts::PI;
+use std::{
+    f64::consts::PI,
+    sync::{Arc, Mutex},
+};
 
 use rand::{thread_rng, Rng};
-use rand_distr::Normal;
+use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
-use crate::fmm::{Particle, Point, Velocity};
+use crate::{
+    fmm::{Particle, Point, Velocity},
+    utils::random,
+};
 
-fn random() -> f64 {
-    thread_rng().gen::<f64>()
-}
-
-fn to_spherical(r: f64) -> (f64, f64, f64) {
+pub fn to_spherical(r: f64) -> (f64, f64, f64) {
     let theta = (2. * random() - 1.).acos();
     let phi = 2. * PI * random();
 
@@ -18,6 +20,37 @@ fn to_spherical(r: f64) -> (f64, f64, f64) {
     let z = r * theta.cos();
 
     (x, y, z)
+}
+
+pub fn nagai_par(n: usize, a: Option<f64>, M: Option<f64>) -> Vec<Particle> {
+    let particles = Arc::new(Mutex::new(Vec::<Particle>::new()));
+
+    [0..n].par_iter().for_each(|_i| {
+        let a = a.unwrap_or_else(|| 1.);
+        let M = M.unwrap_or_else(|| 1.);
+        let m = M / (n as f64);
+        // sqrt(z^2+b^2) + a
+        let radius = (a) / ((M / m).powf(2. / 3.) - 1.).sqrt();
+        let (p_x, p_y, p_z) = to_spherical(radius);
+
+        let mut x: f64 = 0.0;
+        let mut y: f64 = 0.1;
+
+        while y > x * x * (1. - x * x).powf(3.5) {
+            x = random();
+            y = random() / 10.;
+        }
+        let velocity = x * (2.0_f64).sqrt() * (1. + radius * radius).powf(-0.25);
+        let (v_x, v_y, v_z) = to_spherical(velocity);
+
+        particles.lock().unwrap().push(Particle {
+            p: Point { p_x, p_y, p_z },
+            v: Velocity { v_x, v_y, v_z },
+            mass: m,
+        })
+    });
+    let res: Vec<Particle> = particles.lock().unwrap().to_vec();
+    res
 }
 
 pub fn nagai(n: usize, a: Option<f64>, M: Option<f64>) -> Vec<Particle> {
@@ -79,9 +112,10 @@ pub fn plummer(n: usize, a: Option<f64>, M: Option<f64>) -> Vec<Particle> {
 
 #[cfg(test)]
 mod tests {
-    use crate::ic::plummer;
+    use crate::sgalic::halo::*;
+    use crate::{config::AU, ic::plummer};
 
-    use super::random;
+    use super::{nagai, nagai_par, random};
 
     #[test]
     fn test_random_number_generator() {
@@ -99,5 +133,14 @@ mod tests {
         for _ in 0..10 {
             println!("{:?}", plummer(20, Some(10.), Some(10.)));
         }
+    }
+
+    #[test]
+    fn test_nagai() {
+        nagai(10000, Some(AU), Some(1e24));
+    }
+    #[test]
+    fn test_nagai_par() {
+        nagai_par(10000, Some(AU), Some(1e24));
     }
 }

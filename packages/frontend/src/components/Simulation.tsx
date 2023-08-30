@@ -59,7 +59,7 @@ export const RustFFM = () => {
     const ffm = new wasm.CosmoSim(
       N,
       astronomical_unit,
-      1e18,
+      1e24,
       canvas.width,
       canvas.height
     );
@@ -106,7 +106,7 @@ export const RustFFM = () => {
 
     function render(time: number) {
       renderer.render(scene, camera);
-      ffm.simulate(time * 1e-5);
+      ffm.simulate(50 * time);
       positions = ffm.get_position();
       velocities = ffm.get_velocity();
       // TODO do gpu based update

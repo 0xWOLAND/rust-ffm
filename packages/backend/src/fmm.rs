@@ -1,13 +1,13 @@
 use std::ops;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Particle {
     pub p: Point,
     pub v: Velocity,
     pub mass: f64,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Velocity {
     pub v_x: f64,
     pub v_y: f64,

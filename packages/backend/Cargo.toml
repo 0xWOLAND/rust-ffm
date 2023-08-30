@@ -13,3 +13,5 @@ wasm-bindgen = "0.2.87"
 getrandom = { version = "0.2", features = ["js"] }
 js-sys = "0.3.64"
 console_error_panic_hook = "0.1.7"
+rayon = "1.7.0"
+roots = "0.0.8"

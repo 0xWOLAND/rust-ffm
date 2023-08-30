@@ -1,3 +1,5 @@
+use rand::{thread_rng, Rng};
+
 use crate::{config::AU, fmm::Particle};
 
 pub fn to_texture(a: &Vec<Particle>, width: usize, height: usize) -> js_sys::Uint8Array {
@@ -16,4 +18,12 @@ pub fn flatten(v: Vec<(f64, f64, f64)>) -> Vec<f64> {
     v.iter()
         .flat_map(|tup| [tup.0, tup.1, tup.2].iter().cloned().collect::<Vec<f64>>())
         .collect::<Vec<f64>>()
+}
+
+pub fn random() -> f64 {
+    thread_rng().gen::<f64>()
+}
+
+pub fn gen_random_array(n: usize) -> Vec<f64> {
+    (0..n).map(|_| random()).collect::<Vec<f64>>()
 }
