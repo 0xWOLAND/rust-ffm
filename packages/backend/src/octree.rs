@@ -1,5 +1,3 @@
-use wasm_bindgen::prelude::*;
-
 use crate::{
     config::G_CONSTANT,
     fmm::{Cell, Point},

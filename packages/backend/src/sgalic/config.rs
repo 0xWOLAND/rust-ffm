@@ -4,4 +4,7 @@ pub struct Config {
     pub N_halo: i32,
     pub a_halo: i32,
     pub gamma_halo: i32,
+    // Disk Params
+    pub disk_cut: f64,
+    pub Rd: f64,
 }

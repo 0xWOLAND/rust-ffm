@@ -1,9 +1,8 @@
 extern crate console_error_panic_hook;
-use std::iter::once;
 use std::panic;
 use wasm_bindgen::prelude::wasm_bindgen;
 
-use crate::{config::AU, fmm::Particle, ic::plummer, octree::Grid, utils::flatten};
+use crate::{config::AU, fmm::Particle, ic::plummer, octree::Grid};
 
 #[wasm_bindgen]
 pub struct CosmoSim {
@@ -109,4 +108,11 @@ mod tests {
         println!("a_1: {:?}", a_1);
         println!("a_2: {:?}", a_2);
     }
+}
+
+// Utils
+pub fn flatten(v: Vec<(f64, f64, f64)>) -> Vec<f64> {
+    v.iter()
+        .flat_map(|tup| [tup.0, tup.1, tup.2].iter().cloned().collect::<Vec<f64>>())
+        .collect::<Vec<f64>>()
 }

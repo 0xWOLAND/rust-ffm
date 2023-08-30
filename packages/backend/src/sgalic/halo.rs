@@ -1,10 +1,9 @@
 use crate::{
-    ic::to_spherical,
-    sgalic::utils::dehnen_cmf_inverse,
-    utils::{gen_random_array, random},
+    sgalic::cmf::{dehnen_cmf, dehnen_cmf_inv},
+    utils::{gen_random_array, to_spherical},
 };
 
-use super::{config::Config, utils::dehnen_cmf};
+use super::config::Config;
 
 pub fn set_halo_positions(config: Config) -> Vec<(f64, f64, f64)> {
     let halo_cut_r = config.halo_cut_r;
@@ -24,7 +23,10 @@ pub fn set_halo_positions(config: Config) -> Vec<(f64, f64, f64)> {
         .map(|x| halo_cut_M * (*x))
         .collect::<Vec<f64>>();
 
-    let radii = dehnen_cmf_inverse(Mc, M_halo, a_halo, gamma_halo);
-    let coords: Vec<(f64, f64, f64)> = radii.iter().map(|r| to_spherical(*r)).collect();
-    coords
+    let radii = dehnen_cmf_inv(Mc, M_halo, a_halo, gamma_halo);
+
+    radii
+        .iter()
+        .map(|r| to_spherical(r))
+        .collect::<Vec<(f64, f64, f64)>>()
 }

@@ -1,27 +1,11 @@
-use std::{
-    f64::consts::PI,
-    sync::{Arc, Mutex},
-};
+use std::sync::{Arc, Mutex};
 
-use rand::{thread_rng, Rng};
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::{
     fmm::{Particle, Point, Velocity},
-    utils::random,
+    utils::{random, to_spherical},
 };
-
-pub fn to_spherical(r: f64) -> (f64, f64, f64) {
-    let theta = (2. * random() - 1.).acos();
-    let phi = 2. * PI * random();
-
-    let x = r * theta.sin() * phi.cos();
-    let y = r * theta.sin() * phi.sin();
-    let z = r * theta.cos();
-
-    (x, y, z)
-}
-
 pub fn nagai_par(n: usize, a: Option<f64>, M: Option<f64>) -> Vec<Particle> {
     let particles = Arc::new(Mutex::new(Vec::<Particle>::new()));
 
@@ -31,7 +15,7 @@ pub fn nagai_par(n: usize, a: Option<f64>, M: Option<f64>) -> Vec<Particle> {
         let m = M / (n as f64);
         // sqrt(z^2+b^2) + a
         let radius = (a) / ((M / m).powf(2. / 3.) - 1.).sqrt();
-        let (p_x, p_y, p_z) = to_spherical(radius);
+        let (p_x, p_y, p_z) = to_spherical(&radius);
 
         let mut x: f64 = 0.0;
         let mut y: f64 = 0.1;
@@ -41,7 +25,7 @@ pub fn nagai_par(n: usize, a: Option<f64>, M: Option<f64>) -> Vec<Particle> {
             y = random() / 10.;
         }
         let velocity = x * (2.0_f64).sqrt() * (1. + radius * radius).powf(-0.25);
-        let (v_x, v_y, v_z) = to_spherical(velocity);
+        let (v_x, v_y, v_z) = to_spherical(&velocity);
 
         particles.lock().unwrap().push(Particle {
             p: Point { p_x, p_y, p_z },
@@ -61,7 +45,7 @@ pub fn nagai(n: usize, a: Option<f64>, M: Option<f64>) -> Vec<Particle> {
         // sqrt(z^2+b^2) + a
         let radius = (a.unwrap_or_else(|| 1.))
             / ((M.unwrap_or_else(|| 1.0) / mass).powf(2. / 3.) - 1.).sqrt();
-        let (p_x, p_y, p_z) = to_spherical(radius);
+        let (p_x, p_y, p_z) = to_spherical(&radius);
 
         let mut x: f64 = 0.0;
         let mut y: f64 = 0.1;
@@ -71,7 +55,7 @@ pub fn nagai(n: usize, a: Option<f64>, M: Option<f64>) -> Vec<Particle> {
             y = random() / 10.;
         }
         let velocity = x * (2.0_f64).sqrt() * (1. + radius * radius).powf(-0.25);
-        let (v_x, v_y, v_z) = to_spherical(velocity);
+        let (v_x, v_y, v_z) = to_spherical(&velocity);
 
         particles.push(Particle {
             p: Point { p_x, p_y, p_z },
@@ -89,7 +73,7 @@ pub fn plummer(n: usize, a: Option<f64>, M: Option<f64>) -> Vec<Particle> {
         let mass = M.unwrap_or_else(|| 1.0) / (n as f64);
         let radius = (a.unwrap_or_else(|| 1.))
             / ((M.unwrap_or_else(|| 1.0) / mass).powf(2. / 3.) - 1.).sqrt();
-        let (p_x, p_y, p_z) = to_spherical(radius);
+        let (p_x, p_y, p_z) = to_spherical(&radius);
 
         let mut x: f64 = 0.0;
         let mut y: f64 = 0.1;
@@ -99,7 +83,7 @@ pub fn plummer(n: usize, a: Option<f64>, M: Option<f64>) -> Vec<Particle> {
             y = random() / 10.;
         }
         let velocity = x * (2.0_f64).sqrt() * (1. + radius * radius).powf(-0.25);
-        let (v_x, v_y, v_z) = to_spherical(velocity);
+        let (v_x, v_y, v_z) = to_spherical(&velocity);
 
         particles.push(Particle {
             p: Point { p_x, p_y, p_z },
