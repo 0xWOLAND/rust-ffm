@@ -2,58 +2,46 @@ use std::ops;
 
 #[derive(Debug, Clone)]
 pub struct Particle {
-    pub p: Point,
-    pub v: Velocity,
+    pub p: Vec3,
+    pub v: Vec3,
     pub mass: f64,
 }
 
 #[derive(Debug, Clone)]
-pub struct Velocity {
-    pub v_x: f64,
-    pub v_y: f64,
-    pub v_z: f64,
+pub struct Vec3 {
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
 }
 
-impl ops::AddAssign<(f64, f64, f64)> for Velocity {
+impl ops::AddAssign<(f64, f64, f64)> for Vec3 {
     fn add_assign(&mut self, rhs: (f64, f64, f64)) {
-        self.v_x += rhs.0;
-        self.v_y += rhs.1;
-        self.v_z += rhs.2;
+        self.x += rhs.0;
+        self.y += rhs.1;
+        self.z += rhs.2;
     }
 }
-
-#[derive(Debug, Clone)]
-pub struct Point {
-    pub p_x: f64,
-    pub p_y: f64,
-    pub p_z: f64,
-}
-impl ops::AddAssign<(f64, f64, f64)> for Point {
-    fn add_assign(&mut self, rhs: (f64, f64, f64)) {
-        self.p_x += rhs.0;
-        self.p_y += rhs.1;
-        self.p_z += rhs.2;
+impl Vec3 {
+    pub fn new(p_x: f64, p_y: f64, p_z: f64) -> Vec3 {
+        Vec3 {
+            x: p_x,
+            y: p_y,
+            z: p_z,
+        }
     }
 }
-
-impl Point {
-    pub fn new(p_x: f64, p_y: f64, p_z: f64) -> Point {
-        Point { p_x, p_y, p_z }
-    }
-}
-impl Point {
+impl Vec3 {
     pub fn to_cell(&self, range: f64, level: i64) -> Cell {
         let size = range / ((1 << level) as f64);
-        let [x, y, z] =
-            [self.p_x, self.p_y, self.p_z].map(|x| ((x + range / 2.) / size).floor() as i64);
+        let [x, y, z] = [self.x, self.y, self.z].map(|x| ((x + range / 2.) / size).floor() as i64);
         Cell { x, y, z, level }
     }
 
-    pub fn diff(&self, p: Point) -> Point {
-        Point {
-            p_x: self.p_x - p.p_x,
-            p_y: self.p_y - p.p_y,
-            p_z: self.p_z - p.p_z,
+    pub fn diff(&self, p: Vec3) -> Vec3 {
+        Vec3 {
+            x: self.x - p.x,
+            y: self.y - p.y,
+            z: self.z - p.z,
         }
     }
 }
@@ -83,16 +71,12 @@ impl Cell {
             .all(|b| b)
     }
 
-    pub fn center(&self, range: f64) -> Point {
+    pub fn center(&self, range: f64) -> Vec3 {
         let size = range / ((1 << self.level) as f64);
         let [x, y, z] = self
             .to_array()
             .map(|x| size * (x as f64 + 0.5) - range / 2.);
-        Point {
-            p_x: x,
-            p_y: y,
-            p_z: z,
-        }
+        Vec3 { x, y: y, z }
     }
 
     pub fn hash(&self) -> i64 {

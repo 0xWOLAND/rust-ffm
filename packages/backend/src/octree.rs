@@ -1,6 +1,6 @@
 use crate::{
     config::G_CONSTANT,
-    fmm::{Cell, Point},
+    fmm::{Cell, Vec3},
 };
 
 pub struct Grid {
@@ -31,7 +31,7 @@ impl Grid {
         }
     }
 
-    fn neighbors(&self, p: &Point) -> Vec<Cell> {
+    fn neighbors(&self, p: &Vec3) -> Vec<Cell> {
         let cells = self.get_nested_cells(p);
         let mut _cell = &Cell::new(0, 0, 0, 0);
 
@@ -50,7 +50,7 @@ impl Grid {
         neighbors
     }
 
-    fn get_nested_cells(&self, p: &Point) -> Vec<Cell> {
+    fn get_nested_cells(&self, p: &Vec3) -> Vec<Cell> {
         let mut nested_cells = Vec::<Cell>::new();
         for level in (1..self.max_depth).map(|x| x as i64) {
             let cell = p.to_cell(self.range, level);
@@ -61,13 +61,13 @@ impl Grid {
         nested_cells
     }
 
-    pub fn insert_particle(&mut self, p: &Point, mass: f64) {
+    pub fn insert_particle(&mut self, p: &Vec3, mass: f64) {
         let neighbors = self.neighbors(&p);
         for cell in neighbors {
             let hash = cell.hash() as usize;
             let center = cell.center(self.range);
             let mut d = p.diff(center);
-            let r = [d.p_x, d.p_y, d.p_z]
+            let r = [d.x, d.y, d.z]
                 .map(|x| x.powi(2))
                 .iter()
                 .sum::<f64>()
@@ -75,13 +75,13 @@ impl Grid {
 
             let a = G_CONSTANT * mass / r.powi(2);
 
-            d.p_x /= r;
-            d.p_y /= r;
-            d.p_z /= r;
+            d.x /= r;
+            d.y /= r;
+            d.z /= r;
 
-            let a_x = a * d.p_x;
-            let a_y = a * d.p_y;
-            let a_z = a * d.p_z;
+            let a_x = a * d.x;
+            let a_y = a * d.y;
+            let a_z = a * d.z;
 
             self.x[hash] += a_x;
             self.y[hash] += a_y;
@@ -89,7 +89,7 @@ impl Grid {
         }
     }
 
-    pub fn get_acceleration(&self, p: &Point) -> (f64, f64, f64) {
+    pub fn get_acceleration(&self, p: &Vec3) -> (f64, f64, f64) {
         let _cells = self.get_nested_cells(p);
 
         let mut x = 0.;

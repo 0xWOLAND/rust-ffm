@@ -3,7 +3,7 @@ use std::sync::{Arc, Mutex};
 use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::{
-    fmm::{Particle, Point, Velocity},
+    fmm::{Particle, Vec3},
     utils::{random, to_spherical},
 };
 pub fn nagai_par(n: usize, a: Option<f64>, M: Option<f64>) -> Vec<Particle> {
@@ -28,8 +28,16 @@ pub fn nagai_par(n: usize, a: Option<f64>, M: Option<f64>) -> Vec<Particle> {
         let (v_x, v_y, v_z) = to_spherical(&velocity);
 
         particles.lock().unwrap().push(Particle {
-            p: Point { p_x, p_y, p_z },
-            v: Velocity { v_x, v_y, v_z },
+            p: Vec3 {
+                x: p_x,
+                y: p_y,
+                z: p_z,
+            },
+            v: Vec3 {
+                x: v_x,
+                y: v_y,
+                z: v_z,
+            },
             mass: m,
         })
     });
@@ -58,8 +66,16 @@ pub fn nagai(n: usize, a: Option<f64>, M: Option<f64>) -> Vec<Particle> {
         let (v_x, v_y, v_z) = to_spherical(&velocity);
 
         particles.push(Particle {
-            p: Point { p_x, p_y, p_z },
-            v: Velocity { v_x, v_y, v_z },
+            p: Vec3 {
+                x: p_x,
+                y: p_y,
+                z: p_z,
+            },
+            v: Vec3 {
+                x: v_x,
+                y: v_y,
+                z: v_z,
+            },
             mass,
         })
     }
@@ -86,8 +102,16 @@ pub fn plummer(n: usize, a: Option<f64>, M: Option<f64>) -> Vec<Particle> {
         let (v_x, v_y, v_z) = to_spherical(&velocity);
 
         particles.push(Particle {
-            p: Point { p_x, p_y, p_z },
-            v: Velocity { v_x, v_y, v_z },
+            p: Vec3 {
+                x: p_x,
+                y: p_y,
+                z: p_z,
+            },
+            v: Vec3 {
+                x: v_x,
+                y: v_y,
+                z: v_z,
+            },
             mass,
         })
     }

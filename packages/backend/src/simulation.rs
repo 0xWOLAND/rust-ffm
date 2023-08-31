@@ -49,7 +49,7 @@ impl CosmoSim {
         self.particles.iter_mut().for_each(|p| {
             let a = self.g.get_acceleration(&p.p);
             p.v += mul_tuple(a, dt);
-            p.p += mul_tuple((p.v.v_x, p.v.v_y, p.v.v_z), dt);
+            p.p += mul_tuple((p.v.x, p.v.y, p.v.z), dt);
         });
     }
 
@@ -58,7 +58,7 @@ impl CosmoSim {
         let x: Vec<f32> = flatten(
             self.particles
                 .iter()
-                .map(|p| (p.p.p_x, p.p.p_y, p.p.p_z))
+                .map(|particle| (particle.p.x, particle.p.y, particle.p.z))
                 .collect::<Vec<(f64, f64, f64)>>(),
         )
         .iter()
@@ -72,7 +72,7 @@ impl CosmoSim {
         let v: Vec<f32> = flatten(
             self.particles
                 .iter()
-                .map(|p| (p.v.v_x, p.v.v_y, p.v.v_z))
+                .map(|p| (p.v.x, p.v.y, p.v.z))
                 .collect::<Vec<(f64, f64, f64)>>(),
         )
         .iter()
@@ -89,15 +89,15 @@ pub fn get_scale_length() -> f64 {
 #[cfg(test)]
 mod tests {
 
-    use crate::{config::AU, fmm::Point, octree::Grid};
+    use crate::{config::AU, fmm::Vec3, octree::Grid};
 
     #[test]
     fn test_two_particle() {
         let mut g = Grid::new(2., AU);
         let mass = 10.;
 
-        let p_1 = Point::new(0., 0., 0.);
-        let p_2 = Point::new(2., 0., 0.);
+        let p_1 = Vec3::new(0., 0., 0.);
+        let p_2 = Vec3::new(2., 0., 0.);
 
         g.insert_particle(&p_1, mass);
         g.insert_particle(&p_2, mass);
