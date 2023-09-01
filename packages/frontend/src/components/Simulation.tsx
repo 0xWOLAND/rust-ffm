@@ -56,10 +56,10 @@ export const RustFFM = () => {
     camera.position.set(0, 0.2 * astronomical_unit, astronomical_unit);
     camera.position.z = 2;
 
-    const N = 10000;
+    const N = 20000;
     const ffm = new wasm.CosmoSim(
       N,
-      astronomical_unit / 10,
+      astronomical_unit,
       1e24,
       canvas.width,
       canvas.height

@@ -61,7 +61,7 @@ impl Grid {
         nested_cells
     }
 
-    pub fn insert_particle(&mut self, p: &Vec3, mass: f64) {
+    pub fn insert_particle(&mut self, p: &Vec3, mass: f64, f: &dyn Fn(Vec3, Vec3, f64) -> Vec3) {
         let neighbors = self.neighbors(&p);
         for cell in neighbors {
             let hash = cell.hash() as usize;

@@ -15,6 +15,45 @@ pub struct CosmoSim {
     g: Grid,
 }
 
+mod Helpers {
+    use std::iter::once;
+
+    use crate::{
+        config::G_CONSTANT,
+        fmm::{Particle, Vec3},
+        octree::Grid,
+    };
+
+    pub fn insert_particle(g: &mut Grid, p: Particle) {
+        g.insert_particle(&p.p, p.mass, &|v1: Vec3, v2: Vec3, mass: f64| {
+            let mut d = v1.diff(v2);
+            let r = [d.x, d.y, d.z]
+                .map(|x| x.powi(2))
+                .iter()
+                .sum::<f64>()
+                .sqrt();
+
+            let a = G_CONSTANT * mass / r.powi(2);
+
+            d.x /= r;
+            d.y /= r;
+            d.z /= r;
+
+            let x = a * d.x;
+            let y = a * d.y;
+            let z = a * d.z;
+
+            Vec3 { x, y, z }
+        });
+    }
+
+    pub fn flatten(v: Vec<(f64, f64, f64)>) -> Vec<f64> {
+        v.iter()
+            .flat_map(|&(a, b, c)| once(a).chain(once(b)).chain(once(c)))
+            .collect()
+    }
+}
+
 #[wasm_bindgen]
 impl CosmoSim {
     #[wasm_bindgen(constructor)]
@@ -25,7 +64,7 @@ impl CosmoSim {
 
         let mut g = Grid::new(AU / 10., AU);
         for particle in &particles {
-            g.insert_particle(&particle.p, particle.mass);
+            Helpers::insert_particle(&mut g, particle.clone());
         }
 
         CosmoSim {
@@ -38,11 +77,12 @@ impl CosmoSim {
             g,
         }
     }
+
     #[wasm_bindgen]
     pub fn simulate(&mut self, dt: f64) {
         self.g = Grid::new(AU / 10., AU);
         for particle in &self.particles {
-            self.g.insert_particle(&particle.p, particle.mass);
+            Helpers::insert_particle(&mut self.g, particle.clone());
         }
 
         let mul_tuple = |tup: (f64, f64, f64), x: f64| (tup.0 * x, tup.1 * x, tup.2 * x);
@@ -55,7 +95,7 @@ impl CosmoSim {
 
     #[wasm_bindgen]
     pub fn get_position(&self) -> js_sys::Float32Array {
-        let x: Vec<f32> = flatten(
+        let x: Vec<f32> = Helpers::flatten(
             self.particles
                 .iter()
                 .map(|particle| (particle.p.x, particle.p.y, particle.p.z))
@@ -69,7 +109,7 @@ impl CosmoSim {
 
     #[wasm_bindgen]
     pub fn get_velocity(&self) -> js_sys::Float32Array {
-        let v: Vec<f32> = flatten(
+        let v: Vec<f32> = Helpers::flatten(
             self.particles
                 .iter()
                 .map(|p| (p.v.x, p.v.y, p.v.z))
@@ -84,35 +124,4 @@ impl CosmoSim {
 #[wasm_bindgen]
 pub fn get_scale_length() -> f64 {
     AU
-}
-
-#[cfg(test)]
-mod tests {
-
-    use crate::{config::AU, fmm::Vec3, octree::Grid};
-
-    #[test]
-    fn test_two_particle() {
-        let mut g = Grid::new(2., AU);
-        let mass = 10.;
-
-        let p_1 = Vec3::new(0., 0., 0.);
-        let p_2 = Vec3::new(2., 0., 0.);
-
-        g.insert_particle(&p_1, mass);
-        g.insert_particle(&p_2, mass);
-
-        let a_1 = g.get_acceleration(&p_1);
-        let a_2 = g.get_acceleration(&p_2);
-
-        println!("a_1: {:?}", a_1);
-        println!("a_2: {:?}", a_2);
-    }
-}
-
-// Utils
-pub fn flatten(v: Vec<(f64, f64, f64)>) -> Vec<f64> {
-    v.iter()
-        .flat_map(|tup| [tup.0, tup.1, tup.2].iter().cloned().collect::<Vec<f64>>())
-        .collect::<Vec<f64>>()
 }
