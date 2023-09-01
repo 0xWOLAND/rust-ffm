@@ -39,6 +39,7 @@ export const RustFFM = () => {
   useEffect(() => {
     const canvas = canvasRef.current;
     const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
+    let clock = new THREE.Clock();
 
     const fov = 75;
     const aspect = canvas.height / canvas.width; // the canvas default
@@ -58,7 +59,7 @@ export const RustFFM = () => {
     const N = 10000;
     const ffm = new wasm.CosmoSim(
       N,
-      astronomical_unit,
+      astronomical_unit / 10,
       1e24,
       canvas.width,
       canvas.height
@@ -104,9 +105,15 @@ export const RustFFM = () => {
     const cube = new THREE.Mesh(geometry, material);
     scene.add(cube);
 
-    function render(time: number) {
+    function render() {
       renderer.render(scene, camera);
-      ffm.simulate(50 * time);
+      var seconds = clock.getDelta();
+      if (seconds > 1) {
+        seconds = 1;
+      }
+      const timestep = seconds * 60 * 60 * 24 * 15;
+
+      ffm.simulate(500 * timestep);
       positions = ffm.get_position();
       velocities = ffm.get_velocity();
       // TODO do gpu based update
