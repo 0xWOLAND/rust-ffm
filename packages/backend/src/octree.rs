@@ -66,26 +66,12 @@ impl Grid {
         for cell in neighbors {
             let hash = cell.hash() as usize;
             let center = cell.center(self.range);
-            let mut d = p.diff(center);
-            let r = [d.x, d.y, d.z]
-                .map(|x| x.powi(2))
-                .iter()
-                .sum::<f64>()
-                .sqrt();
 
-            let a = G_CONSTANT * mass / r.powi(2);
+            let a = f(p.clone(), center, mass);
 
-            d.x /= r;
-            d.y /= r;
-            d.z /= r;
-
-            let a_x = a * d.x;
-            let a_y = a * d.y;
-            let a_z = a * d.z;
-
-            self.x[hash] += a_x;
-            self.y[hash] += a_y;
-            self.z[hash] += a_z;
+            self.x[hash] += a.x;
+            self.y[hash] += a.y;
+            self.z[hash] += a.z;
         }
     }
 
