@@ -28,7 +28,7 @@ pub fn set_disk_positions(N: usize, z0: f64, config: &mut Config) -> Vec<(f64, f
         .iter()
         .map(|frac| disk_height_cmf_inv(frac, &z0))
         .collect::<Vec<f64>>();
-    let xys = gen_random_array(N)
+    let xys = radii
         .iter()
         .map(|r| to_circular(r))
         .collect::<Vec<(f64, f64)>>();
