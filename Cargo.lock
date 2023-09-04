@@ -292,6 +292,7 @@ dependencies = [
  "rayon",
  "roots",
  "serde",
+ "serde_derive",
  "toml",
  "wasm-bindgen",
 ]

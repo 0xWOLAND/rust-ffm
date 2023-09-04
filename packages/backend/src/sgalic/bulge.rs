@@ -6,11 +6,11 @@ use crate::{
 use super::{cmf::dehnen_cmf, config::Config};
 
 pub fn set_bulge_positions(config: &mut Config) -> Vec<(f64, f64, f64)> {
-    let bulge_cut_r = config.bulge_cut_r;
-    let M_bulge = config.M_bulge;
-    let N_bulge = config.N_bulge as usize;
-    let a_bulge = config.a_bulge;
-    let gamma_bulge = config.gamma_bulge;
+    let bulge_cut_r = config.bulge.bulge_cut_r;
+    let M_bulge = config.bulge.M_bulge;
+    let N_bulge = config.bulge.N_bulge as usize;
+    let a_bulge = config.bulge.a_bulge;
+    let gamma_bulge = config.bulge.gamma_bulge;
 
     let bulge_cut_M = dehnen_cmf(bulge_cut_r, M_bulge, a_bulge, gamma_bulge);
 

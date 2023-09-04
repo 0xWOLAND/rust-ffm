@@ -12,11 +12,11 @@ fn brentq(f: &dyn Fn(f64) -> f64) -> f64 {
 }
 
 // Halo CMFs
-pub fn dehnen_cmf(r: f64, M: f64, a: i32, gamma: i32) -> f64 {
-    M * (r / (r + (a as f64))).powi(3 - gamma)
+pub fn dehnen_cmf(r: f64, M: f64, a: f64, gamma: i32) -> f64 {
+    M * (r / (r + a)).powi(3 - gamma)
 }
 
-pub fn dehnen_cmf_inv(Mc: Vec<f64>, M: f64, a: i32, gamma: i32) -> Vec<f64> {
+pub fn dehnen_cmf_inv(Mc: Vec<f64>, M: f64, a: f64, gamma: i32) -> Vec<f64> {
     Mc.iter()
         .map(|i| {
             assert!(0. <= *i && *i <= M);

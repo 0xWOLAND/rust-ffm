@@ -1,1 +1,33 @@
+[halo]
+M_halo = 100
+N_halo = 20000
+a_halo = 47
+halo_cut_r = 900
+gamma_halo = 1
 
+[disk]
+M_disk = 5
+N_disk = 10000
+Rd = 3.5
+z0 = 0.7
+factor = 0.8
+disk_cut_r = 30
+
+[bulge]
+M_bulge = 1
+N_bulge = 4000
+a_bulge = 1.5
+bulge_cut_r = 30
+gamma_bulge = 1
+
+[gas]
+M_gas = 1
+N_gas = 20000
+z0_gas = 0.035
+Z = 0.0
+
+[global]
+N_rho = 256
+rho_max = 300
+Nz = 256
+z_max = 3000

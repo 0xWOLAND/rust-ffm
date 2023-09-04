@@ -5,15 +5,14 @@ use crate::{
 
 use super::config::Config;
 
-pub fn set_halo_positions(config: &mut Config) -> Vec<(f64, f64, f64)> {
-    let halo_cut_r = config.halo_cut_r;
-    let M_halo = config.M_halo;
-    let N_halo = config.N_halo as usize;
-    let a_halo = config.a_halo;
-    let gamma_halo = config.gamma_halo;
+pub fn set_halo_positions(config: &mut Config) -> (Vec<(f64, f64, f64)>, f64) {
+    let halo_cut_r = config.halo.halo_cut_r;
+    let M_halo = config.halo.M_halo;
+    let N_halo = config.halo.N_halo as usize;
+    let a_halo = config.halo.a_halo;
+    let gamma_halo = config.halo.gamma_halo;
 
     let halo_cut_M = dehnen_cmf(halo_cut_r, M_halo, a_halo, gamma_halo);
-    config.halo_cut_M = halo_cut_M;
 
     println!(
         "{:?}% of halo mass cut by the truncation...",
@@ -26,8 +25,11 @@ pub fn set_halo_positions(config: &mut Config) -> Vec<(f64, f64, f64)> {
 
     let radii = dehnen_cmf_inv(Mc, M_halo, a_halo, gamma_halo);
 
-    radii
-        .iter()
-        .map(|r| to_spherical(r))
-        .collect::<Vec<(f64, f64, f64)>>()
+    (
+        radii
+            .iter()
+            .map(|r| to_spherical(r))
+            .collect::<Vec<(f64, f64, f64)>>(),
+        halo_cut_M,
+    )
 }
