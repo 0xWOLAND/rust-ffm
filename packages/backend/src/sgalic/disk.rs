@@ -1,5 +1,8 @@
 use crate::{
-    sgalic::cmf::{disk_height_cmf_inv, disk_radial_cmf_inv},
+    sgalic::{
+        cmf::{disk_height_cmf_inv, disk_radial_cmf_inv},
+        velocity::random,
+    },
     utils::{gen_random_array, to_circular},
 };
 
@@ -22,7 +25,7 @@ pub fn set_disk_positions(config: &Config) -> (Vec<(f64, f64, f64)>, f64) {
         .collect::<Vec<f64>>();
     let radii = sample
         .iter()
-        .map(|r| disk_radial_cmf_inv(r, &Rd))
+        .map(|r| random() * disk_radial_cmf_inv(r, &Rd))
         .collect::<Vec<f64>>();
 
     let zs = gen_random_array(N)

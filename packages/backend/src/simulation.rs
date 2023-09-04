@@ -2,7 +2,12 @@ extern crate console_error_panic_hook;
 use std::panic;
 use wasm_bindgen::prelude::wasm_bindgen;
 
-use crate::{config::AU, fmm::Particle, ic::plummer, octree::Grid};
+use crate::{
+    config::AU,
+    fmm::Particle,
+    ic::{plummer, spiral_galaxy},
+    octree::Grid,
+};
 
 #[wasm_bindgen]
 pub struct CosmoSim {
@@ -60,9 +65,16 @@ impl CosmoSim {
     pub fn new(n: usize, a: f64, M: f64, width: usize, height: usize) -> CosmoSim {
         panic::set_hook(Box::new(console_error_panic_hook::hook));
 
-        let particles = plummer(n, Some(a), Some(M));
+        // let particles = plummer(n, Some(a), Some(M));
+        let mut particles = plummer(n, Some(a), Some(M));
+        particles.append(&mut spiral_galaxy());
 
-        let mut g = Grid::new(AU / 10., AU);
+        // let mut particles = spiral_galaxy();
+        // particles.append(&mut plummer(n, Some(a), Some(M)));
+
+        let scale = AU;
+
+        let mut g = Grid::new(scale / 2., scale);
         for particle in &particles {
             Helpers::insert_particle(&mut g, particle.clone());
         }

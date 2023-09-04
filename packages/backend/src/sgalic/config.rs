@@ -6,32 +6,26 @@ use toml;
 pub const G_CONSTANT: f64 = 6.67e-11;
 pub const PARAMS: &str = "
 [halo]
-M_halo = 100
+M_halo = 100e24
 N_halo = 20000
-a_halo = 47
+a_halo = 1e8
 halo_cut_r = 900
 gamma_halo = 1
 
 [disk]
-M_disk = 5
+M_disk = 1e24
 N_disk = 10000
-Rd = 3.5
+Rd = 10
 z0 = 0.7
 factor = 0.8
 disk_cut_r = 30
 
 [bulge]
-M_bulge = 1
+M_bulge = 1e24
 N_bulge = 4000
-a_bulge = 1.5
+a_bulge = 1.5e10
 bulge_cut_r = 30
 gamma_bulge = 1
-
-[gas]
-M_gas = 1
-N_gas = 20000
-z0_gas = 0.035
-Z = 0.0
 
 [global]
 N_rho = 256
@@ -45,7 +39,6 @@ pub struct Config {
     pub halo: HaloConfig,
     pub disk: DiskConfig,
     pub bulge: BulgeConfig,
-    pub gas: GasConfig,
     pub global: GlobalConfig,
 }
 #[derive(Deserialize, Debug)]
@@ -77,14 +70,6 @@ pub struct BulgeConfig {
 }
 
 #[derive(Deserialize, Debug)]
-pub struct GasConfig {
-    pub M_gas: f64,
-    pub N_gas: f64,
-    pub z0_gas: f64,
-    pub Z: f64,
-}
-
-#[derive(Deserialize, Debug)]
 pub struct GlobalConfig {
     pub N_rho: f64,
     pub rho_max: f64,
@@ -95,8 +80,8 @@ pub struct GlobalConfig {
 pub fn generate_config() -> Config {
     match toml::from_str(PARAMS) {
         Ok(d) => d,
-        Err(_) => {
-            eprintln!("Unable to load data");
+        Err(e) => {
+            eprintln!("Unable to load data {}", e);
             exit(1);
         }
     }

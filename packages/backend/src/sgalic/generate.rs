@@ -20,8 +20,10 @@ pub fn generate_galaxy() -> (Vec<(f64, f64, f64)>, Vec<(f64, f64, f64)>, Vec<f64
     assert!(coords_bulge.len() == n_bulge);
     assert!(coords_halo.len() == n_halo);
 
+    let mass = config.disk.M_disk / 10.;
+
     let vels = [
-        keplerian(&coords_disk, config.disk.M_disk),
+        keplerian(&coords_disk, mass),
         plummer(&coords_bulge),
         plummer(&coords_halo),
     ]
@@ -51,6 +53,6 @@ mod tests {
 
     #[test]
     fn test() {
-        println!("{:?}", generate_galaxy());
+        generate_galaxy();
     }
 }

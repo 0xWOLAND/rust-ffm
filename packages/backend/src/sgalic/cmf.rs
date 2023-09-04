@@ -1,80 +1,69 @@
+use std::mem::swap;
+
 // Cumulative Mass Functions
 fn brentq(f: &dyn Fn(f64) -> f64, bounds: (f64, f64)) -> f64 {
-    let (a, b) = bounds;
-    let xtol: f64 = 1e-15;
-    let ytol: f64 = 1e-8;
+    let (mut a, mut b) = bounds;
+    let mut fa = f(a);
+    let mut fb = f(b);
+    let mut fs = 0.;
+    let MAX_ITER = 10000;
+    let tolerance = 1e-5;
 
-    let mut xb = [a, b];
-    let mut yb = [f(a), f(b)];
-
-    assert!(yb.map(|x| x.signum()).iter().sum::<f64>() == 0.);
-
-    if yb[0].abs() < yb[1].abs() {
-        xb = [b, a];
-        yb = [yb[1], yb[0]];
+    if fa.abs() < fb.abs() {
+        swap(&mut a, &mut b);
+        swap(&mut fa, &mut fb);
     }
 
-    let mut c = xb[0];
+    let mut c = a;
+    let mut fc = fa;
+    let mut mflag = true;
+    let mut s = 0.;
     let mut d = 0.;
-    let mut yc = yb[0];
-    let mut usedbisec = true;
 
-    let mut x = 0.;
-    let mut y = 0.;
-
-    for _ in 0..100 {
-        let mut s = {
-            if yb[0] != yc && yb[1] != yc {
-                xb[0] * yb[1] * yc / ((yb[0] - yb[1]) * (yb[0] - yc))
-                    + xb[1] * yb[0] * yc / ((yb[1] - yb[0]) * (yb[1] - yc))
-                    + c * yb[0] * yb[1] / ((yc - yb[0]) * (yc - yb[1]))
-            } else {
-                (yb[0] * xb[1] - yb[1] * xb[0]) / (yb[0] - yb[1])
-            }
-        };
-        if (s - (3. * xb[0] + xb[1]) / 4.) * (s - xb[1]) >= 0.
-            || (usedbisec && (s - xb[1]).abs() >= (xb[1] - c).abs() / 2.)
-            || (!usedbisec && (s - xb[1]).abs() >= (c - d).abs() / 2.)
-            || (usedbisec && (xb[1] - c).abs() < (xtol).abs())
-            || (!usedbisec && (c - d).abs() < (xtol).abs())
+    for _ in 0..MAX_ITER {
+        if (a - b).abs() < tolerance {
+            break;
+        }
+        if (fa != fc && fb != fc) {
+            s = (a * fb * fc / ((fa - fb) * (fa - fc)))
+                + (b * fa * fc / ((fb - fa) * (fb - fc)))
+                + (c * fa * fb / ((fc - fa) * (fc - fb)));
+        } else {
+            s = b - fb * (b - a) / (fb - fa);
+        }
+        if ((s < (3. * a + b) * 0.25) || (s > b))
+            || (mflag && ((s - b).abs() >= ((b - c).abs() * 0.5)))
+            || (!mflag && ((s - b).abs() >= ((c - d).abs() * 0.5)))
+            || (mflag && ((b - c).abs() < tolerance))
+            || (!mflag && ((c - d).abs() < tolerance))
         {
-            s = (xb[0] + xb[1]) / 2.;
-            usedbisec = true;
+            s = (a + b) * 0.5;
+
+            mflag = true;
         } else {
-            usedbisec = false
+            mflag = false;
         }
-        let ys = f(s);
+
+        fs = f(s);
         d = c;
-        c = xb[1];
-        yc = yb[1];
-        if yb[0] * ys < 0. {
-            xb[1] = s;
-            yb[1] = ys;
+        c = b;
+        fc = fb;
+
+        if (fa * fs < 0.) {
+            b = s;
+            fb = fs;
         } else {
-            xb[0] = s;
-            yb[0] = ys;
+            a = s;
+            fa = fs;
         }
-        if yb[0].abs() < yb[1].abs() {
-            xb = [xb[1], xb[0]];
-            yb = [yb[1], yb[0]];
-        }
-        if yb[1] == 0. {
-            x = xb[1];
-            y = yb[1];
-            break;
-        }
-        if ys == 0. {
-            x = s;
-            y = ys;
-            break;
-        }
-        if (xb[1] - xb[0]).abs() < xtol {
-            x = s;
-            y = ys;
-            break;
+
+        if (fa.abs() < fb.abs()) {
+            swap(&mut a, &mut b);
+            swap(&mut fa, &mut fb);
         }
     }
-    x
+
+    s
 }
 
 // Halo CMFs
@@ -99,7 +88,7 @@ pub fn disk_radial_cmf(r: &f64, Rd: &f64) -> f64 {
 
 pub fn disk_radial_cmf_inv(frac: &f64, Rd: &f64) -> f64 {
     let f = |r: f64| disk_radial_cmf(&r, Rd) - frac;
-    brentq(&f, (0., 1e10))
+    brentq(&f, (-1e10, 1e10))
 }
 
 pub fn disk_height_cmf_inv(frac: &f64, z0: &f64) -> f64 {

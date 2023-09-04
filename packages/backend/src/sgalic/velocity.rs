@@ -26,7 +26,7 @@ pub fn to_spherical(r: &f64) -> (f64, f64, f64) {
 pub fn plummer(v: &Vec<(f64, f64, f64)>) -> Vec<(f64, f64, f64)> {
     v.iter()
         .map(|&pos| {
-            let radius: f64 = [pos.0, pos.1, pos.2].map(|x| x.powi(2)).iter().sum();
+            let radius: f64 = [pos.0, pos.1, pos.2].map(|x| (x).powi(2)).iter().sum();
             let mut x: f64 = 0.0;
             let mut y: f64 = 0.1;
 

@@ -53,14 +53,14 @@ export const RustFFM = () => {
       0.01 * astronomical_unit,
       10000 * astronomical_unit
     );
-    camera.position.set(0, 0.2 * astronomical_unit, astronomical_unit);
+    camera.position.set(astronomical_unit, 0, astronomical_unit);
     camera.position.z = 2;
 
-    const N = 20000;
+    const N = 10000;
     const ffm = new wasm.CosmoSim(
       N,
-      astronomical_unit,
-      1e24,
+      10 * astronomical_unit,
+      N * 1e24,
       canvas.width,
       canvas.height
     );
@@ -113,7 +113,7 @@ export const RustFFM = () => {
       }
       const timestep = seconds * 60 * 60 * 24 * 15;
 
-      ffm.simulate(500 * timestep);
+      ffm.simulate(timestep);
       positions = ffm.get_position();
       velocities = ffm.get_velocity();
       // TODO do gpu based update
