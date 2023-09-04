@@ -14,7 +14,6 @@ getrandom = { version = "0.2", features = ["js"] }
 js-sys = "0.3.64"
 console_error_panic_hook = "0.1.7"
 rayon = "1.7.0"
-roots = "0.0.8"
 toml = "0.7.6"
 serde = "1.0.188"
 serde_derive = "1.0.188"

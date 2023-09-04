@@ -1,6 +1,3 @@
-use roots::find_root_brent;
-use roots::SimpleConvergency;
-
 // Cumulative Mass Functions
 fn brentq(f: &dyn Fn(f64) -> f64, bounds: (f64, f64)) -> f64 {
     let (a, b) = bounds;
