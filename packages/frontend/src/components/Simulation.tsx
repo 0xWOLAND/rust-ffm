@@ -113,10 +113,9 @@ export const RustFFM = () => {
       }
       const timestep = seconds * 60 * 60 * 24 * 15;
 
-      ffm.simulate(timestep);
+      ffm.simulate(10 * timestep);
       positions = ffm.get_position();
       velocities = ffm.get_velocity();
-      // TODO do gpu based update
       particleGeometry.attributes.position.array = positions;
       particleGeometry.attributes.velocity.array = velocities;
       particleGeometry.attributes.position.needsUpdate = true;
