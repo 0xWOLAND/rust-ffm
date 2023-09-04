@@ -100,11 +100,6 @@ export const RustFFM = () => {
     const particleSystem = new THREE.Points(particleGeometry, particleShader);
     scene.add(particleSystem);
 
-    const material = new THREE.MeshBasicMaterial({ color: 0x44aa88 }); // greenish blue
-
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
-
     function render() {
       renderer.render(scene, camera);
       var seconds = clock.getDelta();
