@@ -6,11 +6,19 @@ use super::{
     velocity::{keplerian, plummer},
 };
 
-pub fn generate_galaxy() -> (Vec<(f64, f64, f64)>, Vec<(f64, f64, f64)>) {
+pub fn generate_galaxy() -> (Vec<(f64, f64, f64)>, Vec<(f64, f64, f64)>, Vec<f64>) {
     let config = generate_config();
     let (coords_disk, disk_cut) = set_disk_positions(&config);
-    let coords_bulge = set_bulge_positions(&config);
+    let (coords_bulge, bulge_cut_M) = set_bulge_positions(&config);
     let (coords_halo, halo_cut_M) = set_halo_positions(&config);
+
+    let n_disk = config.disk.N_disk as usize;
+    let n_bulge = config.bulge.N_bulge as usize;
+    let n_halo = config.halo.N_halo as usize;
+
+    assert!(coords_disk.len() == n_disk);
+    assert!(coords_bulge.len() == n_bulge);
+    assert!(coords_halo.len() == n_halo);
 
     let vels = [
         keplerian(&coords_disk, config.disk.M_disk),
@@ -26,7 +34,16 @@ pub fn generate_galaxy() -> (Vec<(f64, f64, f64)>, Vec<(f64, f64, f64)>) {
         .flatten()
         .collect::<Vec<(f64, f64, f64)>>();
 
-    (pos, vels)
+    let masses = vec![
+        vec![disk_cut; n_disk],
+        vec![bulge_cut_M; n_bulge],
+        vec![halo_cut_M; n_halo],
+    ]
+    .into_iter()
+    .flatten()
+    .collect::<Vec<f64>>();
+
+    (pos, vels, masses)
 }
 #[cfg(test)]
 mod tests {

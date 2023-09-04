@@ -4,6 +4,7 @@ use rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 
 use crate::{
     fmm::{Particle, Vec3},
+    sgalic::generate::generate_galaxy,
     utils::{random, to_spherical},
 };
 pub fn nagai_par(n: usize, a: Option<f64>, M: Option<f64>) -> Vec<Particle> {
@@ -118,12 +119,25 @@ pub fn plummer(n: usize, a: Option<f64>, M: Option<f64>) -> Vec<Particle> {
     particles
 }
 
+pub fn spiral_galaxy() -> Vec<Particle> {
+    let (pos, vels, masses) = generate_galaxy();
+    pos.iter()
+        .zip(vels)
+        .zip(masses)
+        .map(|((&pos, vel), mass)| Particle {
+            p: Vec3::from(pos),
+            v: Vec3::from(vel),
+            mass,
+        })
+        .collect()
+}
+
 #[cfg(test)]
 mod tests {
     use crate::sgalic::halo::*;
     use crate::{config::AU, ic::plummer};
 
-    use super::{nagai, nagai_par, random};
+    use super::{nagai, nagai_par, random, spiral_galaxy};
 
     #[test]
     fn test_random_number_generator() {
@@ -150,5 +164,9 @@ mod tests {
     #[test]
     fn test_nagai_par() {
         nagai_par(10000, Some(AU), Some(1e24));
+    }
+    #[test]
+    fn test_spiral_galaxy() {
+        println!("{:?}", spiral_galaxy());
     }
 }

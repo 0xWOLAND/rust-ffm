@@ -1,3 +1,4 @@
+use std::convert::From;
 use std::ops;
 
 #[derive(Debug, Clone)]
@@ -19,6 +20,15 @@ impl ops::AddAssign<(f64, f64, f64)> for Vec3 {
         self.x += rhs.0;
         self.y += rhs.1;
         self.z += rhs.2;
+    }
+}
+impl From<(f64, f64, f64)> for Vec3 {
+    fn from(value: (f64, f64, f64)) -> Self {
+        Self {
+            x: value.0,
+            y: value.1,
+            z: value.2,
+        }
     }
 }
 impl Vec3 {
