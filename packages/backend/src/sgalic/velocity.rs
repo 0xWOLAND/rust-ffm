@@ -6,6 +6,11 @@ use std::f64::consts::PI;
 pub fn random() -> f64 {
     thread_rng().gen::<f64>()
 }
+
+pub fn gen_random_array(n: usize) -> Vec<f64> {
+    (0..n).map(|_| random()).collect::<Vec<f64>>()
+}
+
 pub fn to_spherical(r: &f64) -> (f64, f64, f64) {
     let theta = (2. * random() - 1.).acos();
     let phi = 2. * PI * random();
@@ -18,7 +23,7 @@ pub fn to_spherical(r: &f64) -> (f64, f64, f64) {
 }
 
 // Velocity Functions
-pub fn plummer(v: Vec<(f64, f64, f64)>) -> Vec<(f64, f64, f64)> {
+pub fn plummer(v: &Vec<(f64, f64, f64)>) -> Vec<(f64, f64, f64)> {
     v.iter()
         .map(|&pos| {
             let radius: f64 = [pos.0, pos.1, pos.2].map(|x| x.powi(2)).iter().sum();
@@ -35,7 +40,7 @@ pub fn plummer(v: Vec<(f64, f64, f64)>) -> Vec<(f64, f64, f64)> {
         .collect::<Vec<(f64, f64, f64)>>()
 }
 
-pub fn keplerian(v: Vec<(f64, f64, f64)>, mass: f64) -> Vec<(f64, f64, f64)> {
+pub fn keplerian(v: &Vec<(f64, f64, f64)>, mass: f64) -> Vec<(f64, f64, f64)> {
     v.iter()
         .map(|&pos| {
             let radius: f64 = [pos.0, pos.1, pos.2].map(|x| x.powi(2)).iter().sum();

@@ -3,6 +3,43 @@ use std::fs;
 use std::process::exit;
 use toml;
 
+pub const G_CONSTANT: f64 = 6.67e-11;
+pub const PARAMS: &str = "
+[halo]
+M_halo = 100
+N_halo = 20000
+a_halo = 47
+halo_cut_r = 900
+gamma_halo = 1
+
+[disk]
+M_disk = 5
+N_disk = 10000
+Rd = 3.5
+z0 = 0.7
+factor = 0.8
+disk_cut_r = 30
+
+[bulge]
+M_bulge = 1
+N_bulge = 4000
+a_bulge = 1.5
+bulge_cut_r = 30
+gamma_bulge = 1
+
+[gas]
+M_gas = 1
+N_gas = 20000
+z0_gas = 0.035
+Z = 0.0
+
+[global]
+N_rho = 256
+rho_max = 300
+Nz = 256
+z_max = 3000
+";
+
 #[derive(Deserialize, Debug)]
 pub struct Config {
     pub halo: HaloConfig,
@@ -11,9 +48,6 @@ pub struct Config {
     pub gas: GasConfig,
     pub global: GlobalConfig,
 }
-
-pub const G_CONSTANT: f64 = 6.67e-11;
-
 #[derive(Deserialize, Debug)]
 pub struct HaloConfig {
     pub M_halo: f64,
@@ -59,15 +93,7 @@ pub struct GlobalConfig {
 }
 
 pub fn generate_config() -> Config {
-    let filename = "src/sgalic/params.toml";
-    let contents = match fs::read_to_string(filename) {
-        Ok(c) => c,
-        Err(_) => {
-            eprintln!("Could not read file");
-            exit(1);
-        }
-    };
-    match toml::from_str(&contents) {
+    match toml::from_str(PARAMS) {
         Ok(d) => d,
         Err(_) => {
             eprintln!("Unable to load data");

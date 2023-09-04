@@ -1,13 +1,32 @@
 use super::{
-    bulge::set_bulge_positions, config::generate_config, disk::set_disk_positions,
+    bulge::set_bulge_positions,
+    config::generate_config,
+    disk::set_disk_positions,
     halo::set_halo_positions,
+    velocity::{keplerian, plummer},
 };
 
-pub fn generate_galaxy() {
+pub fn generate_galaxy() -> (Vec<(f64, f64, f64)>, Vec<(f64, f64, f64)>) {
     let config = generate_config();
-    let (coord_stars, disk_cut) = set_disk_positions(&config);
+    let (coords_disk, disk_cut) = set_disk_positions(&config);
     let coords_bulge = set_bulge_positions(&config);
     let (coords_halo, halo_cut_M) = set_halo_positions(&config);
+
+    let vels = [
+        keplerian(&coords_disk, config.disk.M_disk),
+        plummer(&coords_bulge),
+        plummer(&coords_halo),
+    ]
+    .into_iter()
+    .flatten()
+    .collect::<Vec<(f64, f64, f64)>>();
+
+    let pos = [coords_disk, coords_bulge, coords_halo]
+        .into_iter()
+        .flatten()
+        .collect::<Vec<(f64, f64, f64)>>();
+
+    (pos, vels)
 }
 #[cfg(test)]
 mod tests {
@@ -15,6 +34,6 @@ mod tests {
 
     #[test]
     fn test() {
-        generate_galaxy();
+        println!("{:?}", generate_galaxy());
     }
 }

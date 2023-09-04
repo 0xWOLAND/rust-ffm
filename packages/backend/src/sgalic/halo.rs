@@ -1,6 +1,6 @@
-use crate::{
-    sgalic::cmf::{dehnen_cmf, dehnen_cmf_inv},
-    utils::{gen_random_array, to_spherical},
+use crate::sgalic::{
+    cmf::{dehnen_cmf, dehnen_cmf_inv},
+    velocity::{gen_random_array, to_spherical},
 };
 
 use super::config::Config;
