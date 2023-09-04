@@ -5,7 +5,7 @@ use crate::{
 
 use super::config::Config;
 
-pub fn set_halo_positions(config: &mut Config) -> (Vec<(f64, f64, f64)>, f64) {
+pub fn set_halo_positions(config: &Config) -> (Vec<(f64, f64, f64)>, f64) {
     let halo_cut_r = config.halo.halo_cut_r;
     let M_halo = config.halo.M_halo;
     let N_halo = config.halo.N_halo as usize;

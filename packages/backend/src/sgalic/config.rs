@@ -12,6 +12,8 @@ pub struct Config {
     pub global: GlobalConfig,
 }
 
+pub const G_CONSTANT: f64 = 6.67e-11;
+
 #[derive(Deserialize, Debug)]
 pub struct HaloConfig {
     pub M_halo: f64,
@@ -56,7 +58,7 @@ pub struct GlobalConfig {
     pub z_max: f64,
 }
 
-pub fn generate_galaxy() {
+pub fn generate_config() -> Config {
     let filename = "src/sgalic/params.toml";
     let contents = match fs::read_to_string(filename) {
         Ok(c) => c,
@@ -65,22 +67,11 @@ pub fn generate_galaxy() {
             exit(1);
         }
     };
-    let data: Config = match toml::from_str(&contents) {
+    match toml::from_str(&contents) {
         Ok(d) => d,
         Err(_) => {
             eprintln!("Unable to load data");
             exit(1);
         }
-    };
-    println!("{:?}", data);
-}
-
-#[cfg(test)]
-mod tests {
-    use super::generate_galaxy;
-
-    #[test]
-    fn test() {
-        generate_galaxy();
     }
 }

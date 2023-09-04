@@ -5,7 +5,9 @@ use crate::{
 
 use super::{cmf::disk_radial_cmf, config::Config};
 
-pub fn set_disk_positions(N: usize, z0: f64, config: &mut Config) -> (Vec<(f64, f64, f64)>, f64) {
+pub fn set_disk_positions(config: &Config) -> (Vec<(f64, f64, f64)>, f64) {
+    let N = config.disk.N_disk as usize;
+    let z0 = config.disk.z0;
     let Rd = config.disk.Rd;
     let disk_cut = config.disk.disk_cut_r;
 
