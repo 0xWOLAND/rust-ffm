@@ -11,8 +11,8 @@ export const vertexShaderSrc = `
 		void main() {
 			vPosition = position;
       vVelocity = velocity;
+
 			gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.);
-			// gl_PointSize = 8. * mass / earth_mass;
       gl_PointSize = 1.;
 		}
   `;
@@ -24,7 +24,6 @@ export const fragmentShaderSrc = `
         varying vec3 vVelocity;
 
 
-        //USER_INPUT_GOES_HERE
 
         void main() {
             gl_FragColor = vec4(1.);
