@@ -1,11 +1,10 @@
 ### About
 
-A fast multipole method-based cosmological simulation
+A fast multipole method-based N-body simulation
 
 ### Building the project
 
 ```sh
-yarn build
-yarn
-yarn dev
+yarn && yarn build
+yarn serve
 ```
