@@ -1,13 +1,13 @@
 extern crate console_error_panic_hook;
-use std::panic;
-use wasm_bindgen::prelude::wasm_bindgen;
-
 use crate::{
     config::AU,
-    fmm::Particle,
+    fmm::{Particle, Vec3},
     ic::{plummer, spiral_galaxy},
     octree::Grid,
 };
+use itertools::izip;
+use std::panic;
+use wasm_bindgen::prelude::wasm_bindgen;
 
 #[wasm_bindgen]
 pub struct CosmoSim {
@@ -16,13 +16,12 @@ pub struct CosmoSim {
 }
 
 mod Helpers {
-    use std::iter::once;
-
     use crate::{
         config::G_CONSTANT,
         fmm::{Particle, Vec3},
         octree::Grid,
     };
+    use std::iter::once;
 
     pub fn insert_particle(g: &mut Grid, p: Particle) {
         g.insert_particle(&p.p, p.mass, &|v1: Vec3, v2: Vec3, mass: f64| {
@@ -60,12 +59,46 @@ impl CosmoSim {
     pub fn new(n: usize, a: f64, M: f64) -> CosmoSim {
         panic::set_hook(Box::new(console_error_panic_hook::hook));
 
-        // let particles = plummer(n, Some(a), Some(M));
-        let mut particles = plummer(n, Some(a), Some(M));
-        particles.append(&mut spiral_galaxy());
+        let mut particles: Vec<Particle> = Vec::new();
+        let positions = [
+            Vec3 {
+                x: 0.,
+                y: 0.,
+                z: 0.,
+            },
+            Vec3 {
+                x: 0.,
+                y: 0.,
+                z: 0.,
+            },
+        ];
 
-        // let mut particles = spiral_galaxy();
-        // particles.append(&mut plummer(10000, Some(a), Some(M)));
+        let velocities = [
+            Vec3 {
+                x: 0.,
+                y: 0.,
+                z: 0.,
+            },
+            Vec3 {
+                x: 0.,
+                y: 0.,
+                z: 0.,
+            },
+        ];
+
+        let particle_groups = [plummer(n, Some(a), Some(M)), spiral_galaxy()];
+        for (pos, vel, mut group) in izip!(positions, velocities, particle_groups) {
+            particles.append(
+                &mut group
+                    .iter()
+                    .map(|p| Particle {
+                        p: p.p + pos,
+                        v: p.v + vel,
+                        mass: p.mass,
+                    })
+                    .collect::<Vec<Particle>>(),
+            );
+        }
 
         let scale = AU;
 

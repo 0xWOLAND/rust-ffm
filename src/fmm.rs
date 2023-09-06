@@ -8,7 +8,7 @@ pub struct Particle {
     pub mass: f64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct Vec3 {
     pub x: f64,
     pub y: f64,
@@ -22,6 +22,19 @@ impl ops::AddAssign<(f64, f64, f64)> for Vec3 {
         self.z += rhs.2;
     }
 }
+
+impl ops::Add<Vec3> for Vec3 {
+    type Output = Vec3;
+
+    fn add(self, rhs: Vec3) -> Self::Output {
+        Self::Output {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+            z: self.z + rhs.z,
+        }
+    }
+}
+
 impl From<(f64, f64, f64)> for Vec3 {
     fn from(value: (f64, f64, f64)) -> Self {
         Self {

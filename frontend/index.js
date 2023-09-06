@@ -1,7 +1,7 @@
 import * as Comlink from "comlink";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { N, AU } from "./cosmology";
+import { N, AU, N_plummer, N_spheres } from "./cosmology";
 
 const canvas = document.getElementById("canvas");
 const { width, height } = canvas;
@@ -30,8 +30,7 @@ const timeOutput = document.getElementById("time");
           0.01 * AU,
           10000 * AU
         );
-        camera.position.set(AU, 0, AU);
-        camera.position.z = 5;
+        camera.position.set(0, 0, 1.7 * AU);
 
         // Renderer
         const renderer = new THREE.WebGLRenderer({
@@ -48,6 +47,7 @@ const timeOutput = document.getElementById("time");
         const particleGeometry = new THREE.BufferGeometry();
         let velocities = new Float32Array(3 * N);
         let positions = new Float32Array(3 * N);
+        let masses = new Float32Array(N).fill(1, 0, N_spheres * N_plummer);
         particleGeometry.setAttribute(
           "position",
           new THREE.BufferAttribute(positions, 3)
@@ -55,6 +55,11 @@ const timeOutput = document.getElementById("time");
         particleGeometry.setAttribute(
           "velocity",
           new THREE.BufferAttribute(velocities, 3)
+        );
+
+        particleGeometry.setAttribute(
+          "mass",
+          new THREE.BufferAttribute(masses, 1)
         );
 
         const particleShader = new THREE.ShaderMaterial({
@@ -106,11 +111,15 @@ const timeOutput = document.getElementById("time");
 const vertexShaderSrc = `
   varying vec3 vPosition;
   varying vec3 vVelocity;
+  varying float vMass;
+
   attribute vec3 velocity;
+  attribute float mass;
 
   void main() {
     vPosition = position;
     vVelocity = velocity;
+    vMass = mass;
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.);
     gl_PointSize = 1.;
@@ -122,9 +131,11 @@ const float PI = 3.1415926;
 
 varying vec3 vPosition;
 varying vec3 vVelocity;
+varying float vMass;
 
 void main() {
-    gl_FragColor = vec4(1.);
+    vec3 color = vMass * vec3(236., 46., 0.) + (1. - vMass) * vec3(1., 94., 158.);
+    gl_FragColor = vec4(color / 255., 1.0);
 }
 
   `;
