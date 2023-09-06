@@ -1,4 +1,9 @@
+#[cfg(feature = "parallel")]
+use rayon::prelude::*;
+
 use std::mem::swap;
+#[cfg(feature = "parallel")]
+pub use wasm_bindgen_rayon::init_thread_pool;
 
 // Cumulative Mass Functions
 fn brentq(f: &dyn Fn(f64) -> f64, bounds: (f64, f64)) -> f64 {
@@ -71,8 +76,20 @@ pub fn dehnen_cmf(r: f64, M: f64, a: f64, gamma: i32) -> f64 {
     M * (r / (r + a)).powi(3 - gamma)
 }
 
+#[cfg(not(feature = "rayon"))]
 pub fn dehnen_cmf_inv(Mc: Vec<f64>, M: f64, a: f64, gamma: i32) -> Vec<f64> {
     Mc.iter()
+        .map(|i| {
+            assert!(0. <= *i && *i <= M);
+            let f = |r| dehnen_cmf(r, M, a, gamma) - i;
+            brentq(&f, (0., 1e10))
+        })
+        .collect::<Vec<f64>>()
+}
+
+#[cfg(feature = "rayon")]
+pub fn dehnen_cmf_inv(Mc: Vec<f64>, M: f64, a: f64, gamma: i32) -> Vec<f64> {
+    Mc.par_iter()
         .map(|i| {
             assert!(0. <= *i && *i <= M);
             let f = |r| dehnen_cmf(r, M, a, gamma) - i;

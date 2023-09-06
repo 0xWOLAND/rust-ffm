@@ -48,9 +48,24 @@ pub fn plummer(n: usize, a: Option<f64>, M: Option<f64>) -> Vec<Particle> {
     particles
 }
 
+#[cfg(not(feature = "rayon"))]
 pub fn spiral_galaxy() -> Vec<Particle> {
     let (pos, vels, masses) = generate_galaxy();
     pos.iter()
+        .zip(vels)
+        .zip(masses)
+        .map(|((&pos, vel), mass)| Particle {
+            p: Vec3::from(pos),
+            v: Vec3::from(vel),
+            mass,
+        })
+        .collect()
+}
+
+#[cfg(feature = "rayon")]
+pub fn spiral_galaxy() -> Vec<Particle> {
+    let (pos, vels, masses) = generate_galaxy();
+    pos.par_iter()
         .zip(vels)
         .zip(masses)
         .map(|((&pos, vel), mass)| Particle {
