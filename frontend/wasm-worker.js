@@ -7,15 +7,13 @@ function wrapExports(wasm) {
   return ({ timestep }) => {
     const start = performance.now();
 
-    const time = performance.now() - start;
     fmm.simulate(timestep);
 
     const position = fmm.get_position();
     const velocity = fmm.get_velocity();
+    const time = performance.now() - start;
 
     return {
-      // Little perf boost to transfer data to the main thread w/o copying.
-      //   rawImageData: Comlink.transfer(rawImageData, [rawImageData.buffer]),
       position,
       velocity,
       time,

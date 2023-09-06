@@ -92,6 +92,8 @@ const timeOutput = document.getElementById("time");
             timestep,
           });
 
+          document.getElementById("time").innerText = time / 1000 + " ms";
+
           particleGeometry.attributes.position.array = position;
           particleGeometry.attributes.velocity.array = velocity;
           particleGeometry.attributes.position.needsUpdate = true;
