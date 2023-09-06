@@ -89,14 +89,12 @@ const timeOutput = document.getElementById("time");
           }
           const timestep = seconds * 60 * 60 * 24 * 15;
           let { position, velocity, time } = await handler({
-            timestep: timestep * 500,
+            timestep,
           });
 
           particleGeometry.attributes.position.array = position;
           particleGeometry.attributes.velocity.array = velocity;
-
           particleGeometry.attributes.position.needsUpdate = true;
-          particleGeometry.attributes.velocity.needsUpdate = true;
 
           renderer.render(scene, camera);
           requestAnimationFrame(animate);

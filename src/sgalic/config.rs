@@ -13,7 +13,7 @@ halo_cut_r = 900
 gamma_halo = 1
 
 [disk]
-M_disk = 1e24
+M_disk = 1e20
 N_disk = 10000
 Rd = 10
 z0 = 0.7
