@@ -61,10 +61,10 @@ impl CosmoSim {
         panic::set_hook(Box::new(console_error_panic_hook::hook));
 
         // let particles = plummer(n, Some(a), Some(M));
-        let mut particles = plummer(n, Some(a), Some(M));
-        particles.append(&mut spiral_galaxy());
+        // let mut particles = plummer(0, Some(a), Some(M));
+        // particles.append(&mut spiral_galaxy());
 
-        // let mut particles = spiral_galaxy();
+        let mut particles = spiral_galaxy();
         // particles.append(&mut plummer(n, Some(a), Some(M)));
 
         let scale = AU;
