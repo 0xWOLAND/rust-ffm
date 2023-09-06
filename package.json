@@ -3,11 +3,15 @@
   "scripts": {
     "build:st": "wasm-pack build --target web --release",
     "build:pt": "wasm-pack build --target web --release --out-dir pkg-parallel -- --features parallel",
-    "build": "yarn build:st && yarn build:pt",
-    "serve": "yarn build:st && yarn build:pt && webpack-dev-server "
+    "build:wasm": "yarn build:st && yarn build:pt",
+    "build": "webpack build --mode production",
+    "serve": "yarn build:wasm && webpack-dev-server",
+    "predeploy": "yarn build",
+    "deploy": "gh-pages -d dist"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
+    "gh-pages": "^6.0.0",
     "html-webpack-plugin": "^5.5.3",
     "wasm-pack": "^0.12.1",
     "webpack": "^5.75.0",
