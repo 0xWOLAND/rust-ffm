@@ -45,18 +45,13 @@ const timeOutput = document.getElementById("time");
 
         // Particle Geometry
         const particleGeometry = new THREE.BufferGeometry();
-        let velocities = new Float32Array(3 * N);
         let positions = new Float32Array(3 * N);
         let masses = new Float32Array(N).fill(1, 0, N_spheres * N_plummer);
+        console.log(`using ${N} particles`);
         particleGeometry.setAttribute(
           "position",
           new THREE.BufferAttribute(positions, 3)
         );
-        particleGeometry.setAttribute(
-          "velocity",
-          new THREE.BufferAttribute(velocities, 3)
-        );
-
         particleGeometry.setAttribute(
           "mass",
           new THREE.BufferAttribute(masses, 1)
@@ -82,14 +77,14 @@ const timeOutput = document.getElementById("time");
             seconds = 1;
           }
           const timestep = seconds * 60 * 60 * 24 * 15;
-          let { position, velocity, time } = await handler({
+          let { position, time } = await handler({
             timestep,
           });
 
           timeOutput.innerText = time / 1000 + " ms";
 
-          particleGeometry.attributes.position.array = position;
-          particleGeometry.attributes.velocity.array = velocity;
+          const buf = new THREE.BufferAttribute(new Float32Array(position), 3);
+          particleGeometry.setAttribute("position", buf);
           particleGeometry.attributes.position.needsUpdate = true;
 
           renderer.render(scene, camera);
@@ -110,15 +105,12 @@ const timeOutput = document.getElementById("time");
 
 const vertexShaderSrc = `
   varying vec3 vPosition;
-  varying vec3 vVelocity;
   varying float vMass;
 
-  attribute vec3 velocity;
   attribute float mass;
 
   void main() {
     vPosition = position;
-    vVelocity = velocity;
     vMass = mass;
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.);
@@ -130,7 +122,6 @@ const fragmentShaderSrc = `
 const float PI = 3.1415926;
 
 varying vec3 vPosition;
-varying vec3 vVelocity;
 varying float vMass;
 
 void main() {

@@ -10,12 +10,10 @@ function wrapExports(wasm) {
     fmm.simulate(timestep);
 
     const position = fmm.get_position();
-    const velocity = fmm.get_velocity();
     const time = performance.now() - start;
 
     return {
       position,
-      velocity,
       time,
     };
   };
@@ -24,13 +22,18 @@ function wrapExports(wasm) {
 async function initHandlers() {
   let [singleThread, multiThread] = await Promise.all([
     (async () => {
-      const singleThread = await import("../pkg");
+      const singleThread = await import("./pkg/rust_ffm.js");
+      console.log("single thread available");
       await singleThread.default();
       return wrapExports(singleThread);
     })(),
     (async () => {
-      if (!(await threads())) return;
-      const multiThread = await import("../pkg-parallel");
+      if (!(await threads())) {
+        console.error("threads unavailable");
+        return;
+      }
+      console.log("threads available");
+      const multiThread = await import("./pkg-parallel/rust_ffm.js");
       await multiThread.default();
       await multiThread.initThreadPool(navigator.hardwareConcurrency);
       return wrapExports(multiThread);
